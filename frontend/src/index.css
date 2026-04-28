@@ -1,0 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Un fondo base temporal para ver que funciona */
+body {
+    background-color: #f0fdf4; /* Verde muy suave */
+}
