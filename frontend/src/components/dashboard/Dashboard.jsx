@@ -9,7 +9,7 @@ import VincularMascota from './VincularMascota';
 import MascotaCard from './MascotaCard';
 
 export default function Dashboard() {
-  const { usuario, esVeterinario, esTutor } = useAuth();
+  const { usuario, esVeterinario, esAdministrador, esTutor } = useAuth();
   const navigate = useNavigate();
   const { 
     mascotas, 
@@ -19,6 +19,8 @@ export default function Dashboard() {
     buscarPorChip, 
     vincularMascota 
   } = useMascotas(esTutor ? usuario?.id_cliente : undefined);
+
+  const puedeVerTodos = esVeterinario || esAdministrador;
 
   // 🔍 Manejar búsqueda por chip (solo veterinarios)
   const handleBuscar = async (chip) => {
@@ -68,8 +70,8 @@ export default function Dashboard() {
           Volver al Inicio
         </button>
 
-        {/* Buscador para Veterinarios */}
-        {esVeterinario && (
+        {/* Buscador para Veterinarios y Admin */}
+        {puedeVerTodos && (
           <BuscadorChip 
             onBuscar={handleBuscar}
             onLimpiar={cargarMascotas}

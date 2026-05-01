@@ -8,9 +8,10 @@ import LoadingSpinner from './components/common/LoadingSpinner';
 import AgregarMascota from './components/dashboard/AgregarMascota';
 import Perfil from './components/perfil/Perfil';
 import PanelAdmin from './components/Admi/PanelAdmin';
+import CalendarioCompleto from './components/calendario/CalendarioCompleto';
 
 function App() {
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, loading, esAdministrador, esVeterinario } = useAuth();
 
   if (loading) {
     return (
@@ -23,19 +24,13 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* 🌍 RUTA PÚBLICA PRINCIPAL: El Home (Carrusel) lo ve todo el mundo */}
-        <Route 
-          path="/" 
-          element={<Home />} 
-        />
+        <Route path="/" element={<Home />} />
         
-        {/* 🔐 RUTA DE LOGIN: Si ya tiene sesión, no tiene caso que vea el login, lo mandamos al Dashboard */}
         <Route 
           path="/login" 
-          element={isAuthenticated ? <Navigate to="/dashboard" /> : <LoginScreen />} 
+          element={isAuthenticated ? <Navigate to="/" /> : <LoginScreen />} 
         />
         
-        {/* 🔒 RUTAS PROTEGIDAS: Si un curioso quiere entrar sin sesión, lo mandamos a "/login" */}
         <Route 
           path="/dashboard" 
           element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />} 
@@ -48,23 +43,27 @@ function App() {
 
         <Route 
           path="/nueva-mascota" 
-          element={isAuthenticated ? <AgregarMascota /> : <Navigate to="/login" />} 
+          element={(isAuthenticated && (esVeterinario || esAdministrador)) ? <AgregarMascota /> : <Navigate to="/login" />} 
         />
 
         <Route 
           path="/perfil" 
           element={isAuthenticated ? <Perfil /> : <Navigate to="/login" />} 
         />
+
+        {/* Ruta protegida: solo Administrador puede entrar */}
         <Route 
           path="/panel-admin" 
-          element={isAuthenticated ? <PanelAdmin /> : <Navigate to="/login" />} 
+          element={isAuthenticated && esAdministrador ? <PanelAdmin /> : <Navigate to="/" />} 
         />
 
-        {/* 🚫 RUTA 404: Cualquier ruta inventada redirige al inicio (¡Siempre debe ir al final!) */}
-        <Route 
-          path="*" 
-          element={<Navigate to="/" />} 
+        {/* Calendario completo: solo veterinarios y admin */}
+        <Route
+          path="/calendario"
+          element={(isAuthenticated && (esVeterinario || esAdministrador)) ? <CalendarioCompleto /> : <Navigate to="/" />}
         />
+
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </BrowserRouter>
   );

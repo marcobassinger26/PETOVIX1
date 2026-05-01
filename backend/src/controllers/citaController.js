@@ -42,6 +42,12 @@ exports.crearCita = async (req, res) => {
         const id_usuario = req.usuario.id;
         const { id_animal, fecha, hora, motivo, notas } = req.body;
 
+        // Validar que la fecha no sea en el pasado
+        const hoy = new Date().toISOString().split('T')[0];
+        if (fecha < hoy) {
+            return res.status(400).json({ mensaje: 'No se pueden agendar citas en fechas pasadas.' });
+        }
+
         const nuevaCita = await Cita.create({
             id_animal,
             id_usuario,

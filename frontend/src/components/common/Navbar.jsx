@@ -2,30 +2,23 @@ import { useAuth } from '../../hooks/useAuth';
 import { Link } from 'react-router-dom';
 
 export default function Navbar() {
-  const { usuario, logout, isAuthenticated } = useAuth();
-
-  // 🌟 NUEVA JERARQUÍA: Definimos los roles basándonos en el usuario actual
-  const esAdmin = usuario?.rol === 'Administrador';
-  const esTutor = usuario?.rol === 'Tutor';
-  // Si no es Admin ni Tutor, asumimos que es Veterinario (o puedes validarlo explícitamente)
+  const { usuario, logout, isAuthenticated, esAdministrador, esVeterinario, esTutor } = useAuth();
 
   const handleLogout = () => {
     logout();
-    window.location.href = '/'; // Al salir, recarga en la página pública
+    window.location.href = '/';
   };
 
   return (
     <nav className="bg-white shadow-md px-8 py-4 flex justify-between items-center sticky top-0 z-50">
       
-      {/* 🌟 LOGO: Al darle clic siempre te lleva al inicio */}
       <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition">
         <img src="/petovixlogo1.png" alt="Logo" className="h-16 w-24 object-contain" />
         <h1 className="text-xl md:text-2xl font-bold text-green-900">
           PETOVIX
-          {/* Título dinámico según el nivel de autoridad */}
           {isAuthenticated && (
             <span className="text-sm font-normal text-gray-500 hidden md:inline ml-2">
-              | {esAdmin ? 'Centro de Control Admin' : (esTutor ? 'Portal de Dueños' : 'Panel Veterinario')}
+              | {esAdministrador ? 'Centro de Control Admin' : (esTutor ? 'Portal de Dueños' : 'Panel Veterinario')}
             </span>
           )}
         </h1>
@@ -35,8 +28,7 @@ export default function Navbar() {
         
         {isAuthenticated ? (
           <>
-            {/* 🛡️ ACTUALIZADO: Botón EXCLUSIVO para el Administrador Superior */}
-            {esAdmin && (
+            {esAdministrador && (
               <Link 
                 to="/panel-admin"
                 className="bg-teal-700 text-white font-bold text-sm px-4 py-1.5 rounded-full hover:bg-teal-800 transition-colors shadow-sm flex items-center gap-2"

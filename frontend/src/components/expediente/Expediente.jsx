@@ -14,7 +14,8 @@ import ModalTutor from './ModalTutor';
 export default function Expediente() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { esVeterinario } = useAuth();
+  const { esVeterinario, esAdministrador } = useAuth();
+  const puedeEditar = esVeterinario || esAdministrador;
   
   // Hook personalizado con toda la lógica del expediente
   const { 
@@ -67,7 +68,7 @@ export default function Expediente() {
           className="mb-6 bg-white border border-green-200 text-green-800 font-bold py-2 px-4 rounded-full shadow-sm hover:bg-green-50 hover:shadow-md transition-all flex items-center gap-2 group w-fit"
         >
           <span className="transform group-hover:-translate-x-1 transition-transform">←</span> 
-          {esVeterinario ? 'Volver al buscador' : 'Volver a mis mascotas'}
+          {puedeEditar ? 'Volver al buscador' : 'Volver a mis mascotas'}
         </button>
         <ErrorMessage mensaje={error} onRetry={() => window.location.reload()} />
       </div>
@@ -91,7 +92,7 @@ export default function Expediente() {
         className="mb-6 bg-white border border-green-200 text-green-800 font-bold py-2 px-4 rounded-full shadow-sm hover:bg-green-50 hover:shadow-md transition-all flex items-center gap-2 group w-fit"
       >
         <span className="transform group-hover:-translate-x-1 transition-transform">←</span> 
-        {esVeterinario ? 'Volver al buscador' : 'Volver a mis mascotas'}
+        {puedeEditar ? 'Volver al buscador' : 'Volver a mis mascotas'}
       </button>
 
       {/* Contenedor principal */}
@@ -100,48 +101,44 @@ export default function Expediente() {
         {/* Header con foto y nombre */}
         <HeaderExpediente 
           animal={animal}
-          esVeterinario={esVeterinario}
+          esVeterinario={puedeEditar}
           onCambiarFoto={handleCambiarFoto}
         />
 
-        {/* Contenido del expediente */}
         <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
           
-          {/* COLUMNA IZQUIERDA */}
           <div>
             <InfoBasica animal={animal}
-            esVeterinario={esVeterinario} 
+            esVeterinario={puedeEditar} 
             onActualizar={actualizarAnimal} 
             />
             
             <InfoTutor 
               animal={animal}
-              esVeterinario={esVeterinario}
+              esVeterinario={puedeEditar}
               onActualizarTutor={actualizarTutor}
               onAgregarTutor={() => setMostrarModalTutor(true)}
             />
           </div>
 
-          {/* COLUMNA DERECHA - Historial */}
           <div>
             <HistorialMedico 
               historial={animal.HistorialMedicos}
-              esVeterinario={esVeterinario}
+              esVeterinario={puedeEditar}
               onAgregarEvento={() => setMostrarModalEvento(true)}
             />
           </div>
         </div>
       </div>
 
-      {/* MODALES (Solo se renderizan si es Veterinario) */}
-      {esVeterinario && mostrarModalEvento && (
+      {puedeEditar && mostrarModalEvento && (
         <ModalEvento 
           onCerrar={() => setMostrarModalEvento(false)}
           onGuardar={handleGuardarEvento}
         />
       )}
 
-      {esVeterinario && mostrarModalTutor && (
+      {puedeEditar && mostrarModalTutor && (
         <ModalTutor 
           onCerrar={() => setMostrarModalTutor(false)}
           onGuardar={handleGuardarTutor}

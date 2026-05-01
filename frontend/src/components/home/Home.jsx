@@ -5,7 +5,7 @@ import { useCitas } from '../../hooks/useCitas';
 import Navbar from '../common/Navbar';
 import Footer from '../common/Footer';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
-import axios from 'axios';
+import api from '../../services/api';
 
 // ─────────────────────────────────────────────
 // MODAL NUEVA CITA
@@ -13,25 +13,36 @@ import axios from 'axios';
 function ModalNuevaCita({ onCerrar, onGuardar }) {
   const [loading, setLoading] = useState(false);
   const [animales, setAnimales] = useState([]);
+  const [errorFecha, setErrorFecha] = useState('');
+
+  const hoyISO = new Date().toISOString().split('T')[0];
+
   const [form, setForm] = useState({
     id_animal: '',
-    fecha: new Date().toISOString().split('T')[0],
+    fecha: hoyISO,
     hora: '09:00',
     motivo: '',
     notas: ''
   });
 
-  // ✅ DESPUÉS — trae todos los animales del sistema
-    useEffect(() => {
-    axios.get('http://localhost:3000/api/animales', {
-      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-    })
-    .then(({ data }) => setAnimales(data))
-    .catch(() => setAnimales([]));
-}, []);
+  useEffect(() => {
+    api.get('/animales')
+      .then(({ data }) => setAnimales(data))
+      .catch(() => setAnimales([]));
+  }, []);
+
+  const handleFecha = (e) => {
+    const seleccionada = e.target.value;
+    setErrorFecha(seleccionada < hoyISO ? 'No puedes agendar citas en fechas pasadas.' : '');
+    setForm({ ...form, fecha: seleccionada });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (form.fecha < hoyISO) {
+      setErrorFecha('No puedes agendar citas en fechas pasadas.');
+      return;
+    }
     setLoading(true);
     try {
       await onGuardar(form);
@@ -71,9 +82,11 @@ function ModalNuevaCita({ onCerrar, onGuardar }) {
             <div>
               <label className="block text-sm font-bold text-gray-700 mb-1">Fecha</label>
               <input type="date" required value={form.fecha}
-                onChange={(e) => setForm({ ...form, fecha: e.target.value })}
-                className="w-full border rounded-lg p-2 focus:outline-none focus:border-green-500"
+                min={hoyISO}
+                onChange={handleFecha}
+                className={`w-full border rounded-lg p-2 focus:outline-none focus:border-green-500 ${errorFecha ? 'border-red-400' : ''}`}
               />
+              {errorFecha && <p className="text-xs text-red-500 mt-1">{errorFecha}</p>}
             </div>
             <div>
               <label className="block text-sm font-bold text-gray-700 mb-1">Hora</label>
@@ -157,18 +170,7 @@ function HomeVeterinario({ usuario }) {
         <p className="text-gray-500">Panel de control clínico - PETOVIX</p>
       </div>
 
-      {/* BUSCADOR */}
-      <div className="max-w-4xl mb-12">
-        <div className="relative group">
-          <input
-            type="text"
-            placeholder="Buscar paciente por nombre, dueño o chip..."
-            className="w-full pl-14 pr-6 py-4 rounded-2xl border-none shadow-lg focus:ring-2 focus:ring-green-500 transition-all text-lg outline-none"
-          />
-          <span className="absolute left-5 top-1/2 -translate-y-1/2 text-2xl group-focus-within:scale-110 transition-transform">🔍</span>
-        </div>
-      </div>
-
+      {/* TARJETAS DE ACCIÓN */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
         {/* COLUMNA IZQUIERDA */}
@@ -297,9 +299,12 @@ function HomeVeterinario({ usuario }) {
             )}
           </div>
 
-          <button className="m-5 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl text-sm font-bold text-gray-600 transition-colors">
-            Ver Calendario Completo
-          </button>
+          <Link
+            to="/calendario"
+            className="m-5 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl text-sm font-bold text-gray-600 transition-colors text-center block"
+          >
+            Ver Calendario Completo →
+          </Link>
         </div>
       </div>
 
@@ -318,6 +323,10 @@ function HomeVeterinario({ usuario }) {
 // PANEL TUTOR
 // ─────────────────────────────────────────────
 function HomeTutor() {
+  const { usuario, isAuthenticated } = useAuth();
+  const { citasHoy, loading: loadingCitas } = useCitas();
+  // citasHoy solo tiene datos si isAuthenticated (useCitas ya lo verifica internamente)
+
   const imagenesCarrusel = [
     "https://images.unsplash.com/photo-1599443015574-be5efa37dd1f?q=80&w=1200&auto=format&fit=crop",
     "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?q=80&w=1200&auto=format&fit=crop",
@@ -332,30 +341,139 @@ function HomeTutor() {
     return () => clearInterval(intervalo);
   }, []);
 
+  // Citas próximas: pendientes ordenadas por fecha
+  const citasProximas = citasHoy
+    .filter(c => c.estado === 'Pendiente')
+    .slice(0, 5);
+
   return (
     <main className="flex-grow container mx-auto px-4 py-8">
-      <div className="text-center mb-10">
-        <h2 className="text-4xl font-bold text-green-900 mb-2">Bienvenido a PETOVIX</h2>
-        <p className="text-gray-600 text-lg">Cuidando a tus mejores amigos con la mejor tecnología.</p>
+
+      {/* ENCABEZADO */}
+      <div className="mb-8">
+        <h2 className="text-3xl font-extrabold text-green-900">
+          {isAuthenticated
+            ? `Hola, ${usuario?.nombre?.split(' ')[0] || 'Bienvenido'} 👋`
+            : 'Bienvenido a PETOVIX 🐾'}
+        </h2>
+        <p className="text-gray-500">
+          {isAuthenticated ? 'Tu portal de mascotas en PETOVIX' : 'Cuidando a tus mejores amigos con tecnología veterinaria.'}
+        </p>
       </div>
-      <div className="max-w-md mx-auto mb-12">
-        <Link to="/dashboard"
-          className="bg-white p-8 rounded-2xl shadow-lg border border-green-100 hover:shadow-xl hover:border-green-300 transition-all flex flex-col items-center justify-center group"
-        >
-          <span className="text-5xl mb-4 group-hover:scale-110 transition-transform">🐾</span>
-          <h3 className="text-xl font-bold text-gray-800">Mis Mascotas</h3>
-          <p className="text-sm text-gray-500 mt-2 text-center">Accede a los expedientes de tus peludos.</p>
-        </Link>
-      </div>
-      <div className="max-w-5xl mx-auto rounded-3xl overflow-hidden shadow-2xl relative h-[400px] bg-gray-900">
-        {imagenesCarrusel.map((img, index) => (
-          <img key={index} src={img} alt="Clínica Veterinaria"
-            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${index === imagenActual ? 'opacity-100' : 'opacity-0'}`}
-          />
-        ))}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-8">
-          <h3 className="text-white text-2xl font-bold">Instalaciones de primer nivel para tus mascotas</h3>
+
+      <div className={`grid grid-cols-1 ${isAuthenticated ? 'lg:grid-cols-3' : ''} gap-8`}>
+
+        {/* COLUMNA IZQUIERDA */}
+        <div className={`${isAuthenticated ? 'lg:col-span-2' : 'max-w-2xl mx-auto w-full'} space-y-8`}>
+
+          {/* ACCESO RÁPIDO — solo si está logueado */}
+          {isAuthenticated && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Link to="/dashboard"
+              className="bg-white p-6 rounded-2xl shadow-sm border border-green-100 hover:shadow-md hover:border-green-300 transition-all flex items-center gap-5 group"
+            >
+              <div className="bg-green-50 w-16 h-16 rounded-xl flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">
+                🐾
+              </div>
+              <div>
+                <h3 className="font-bold text-gray-800">Mis Mascotas</h3>
+                <p className="text-xs text-gray-500">Ver expedientes</p>
+              </div>
+            </Link>
+
+            <Link to="/perfil"
+              className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-all flex items-center gap-5 group"
+            >
+              <div className="bg-blue-50 w-16 h-16 rounded-xl flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">
+                👤
+              </div>
+              <div>
+                <h3 className="font-bold text-gray-800">Mi Perfil</h3>
+                <p className="text-xs text-gray-500">Datos de cuenta</p>
+              </div>
+            </Link>
+          </div>
+          )} {/* fin isAuthenticated acceso rápido */}
+
+          {/* CARRUSEL */}
+          <div className="rounded-3xl overflow-hidden shadow-xl relative h-[280px] bg-gray-900">
+            {imagenesCarrusel.map((img, index) => (
+              <img key={index} src={img} alt="Clínica Veterinaria"
+                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${index === imagenActual ? 'opacity-100' : 'opacity-0'}`}
+              />
+            ))}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-8">
+              <div>
+                <h3 className="text-white text-xl font-bold">Instalaciones de primer nivel</h3>
+                <p className="text-green-300 text-sm">para tus mascotas 🐶🐱</p>
+              </div>
+            </div>
+          </div>
         </div>
+
+        {/* COLUMNA DERECHA: MIS CITAS — solo si está logueado */}
+        {isAuthenticated && (
+        <div className="bg-white rounded-3xl shadow-lg border border-gray-50 flex flex-col overflow-hidden">
+          <div className="bg-green-50 p-5 border-b border-green-100">
+            <h3 className="font-bold text-green-900 flex items-center gap-2">
+              📅 Mis Próximas Citas
+            </h3>
+            <p className="text-xs text-gray-400 mt-0.5">Solo lectura — el veterinario las agenda</p>
+          </div>
+
+          <div className="p-5 space-y-3 flex-grow overflow-y-auto max-h-[380px]">
+            {loadingCitas ? (
+              <div className="text-center py-8">
+                <p className="text-2xl animate-bounce">🐾</p>
+                <p className="text-xs text-gray-400 mt-2">Cargando citas...</p>
+              </div>
+            ) : citasProximas.length === 0 ? (
+              <div className="text-center py-8">
+                <p className="text-4xl mb-3">📭</p>
+                <p className="text-sm font-bold text-gray-600">Sin citas próximas</p>
+                <p className="text-xs text-gray-400 mt-1">
+                  Cuando el veterinario agende una cita para tu mascota, aparecerá aquí.
+                </p>
+              </div>
+            ) : (
+              citasProximas.map((cita) => (
+                <div key={cita.id_cita}
+                  className="flex items-start gap-3 p-3 bg-green-50 rounded-xl border border-green-100"
+                >
+                  <div className="bg-green-700 text-white rounded-lg px-2 py-1 text-center min-w-[50px]">
+                    <p className="text-xs font-bold">{cita.hora?.slice(0, 5)}</p>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold text-gray-800 truncate">
+                      {cita.Animal?.nombre}
+                      <span className="font-normal text-gray-500 text-xs"> · {cita.Animal?.especie}</span>
+                    </p>
+                    <p className="text-xs text-gray-500 truncate">{cita.motivo}</p>
+                    <p className="text-xs text-green-700 font-semibold mt-0.5">
+                      {new Date(cita.fecha + 'T00:00:00').toLocaleDateString('es-MX', {
+                        weekday: 'short', day: 'numeric', month: 'short'
+                      })}
+                    </p>
+                  </div>
+                  <span className={`text-xs px-2 py-0.5 rounded-full font-bold flex-shrink-0 ${
+                    cita.estado === 'Completada' ? 'bg-green-100 text-green-700' :
+                    cita.estado === 'Cancelada'  ? 'bg-red-100 text-red-600' :
+                                                    'bg-blue-100 text-blue-700'
+                  }`}>
+                    {cita.estado}
+                  </span>
+                </div>
+              ))
+            )}
+          </div>
+
+          <div className="p-5 border-t border-gray-100">
+            <p className="text-xs text-center text-gray-400">
+              Para agendar una cita, contacta a tu veterinario.
+            </p>
+          </div>
+        </div>
+        )} {/* fin isAuthenticated citas */}
       </div>
     </main>
   );
@@ -365,11 +483,11 @@ function HomeTutor() {
 // COMPONENTE PRINCIPAL
 // ─────────────────────────────────────────────
 export default function Home() {
-  const { esVeterinario, usuario } = useAuth();
+  const { esVeterinario, esAdministrador, usuario } = useAuth();
   return (
     <div className="min-h-screen flex flex-col bg-slate-50">
       <Navbar />
-      {esVeterinario ? <HomeVeterinario usuario={usuario} /> : <HomeTutor />}
+      {(esVeterinario || esAdministrador) ? <HomeVeterinario usuario={usuario} /> : <HomeTutor />}
       <Footer />
     </div>
   );
