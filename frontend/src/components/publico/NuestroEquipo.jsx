@@ -11,7 +11,7 @@ export default function NuestroEquipo() {
     const cargarEquipo = async () => {
       try {
         // Ruta PÚBLICA: solo devuelve nombre, foto, especialidad y bio
-        const response = await api.get('/publico/veterinarios');
+        const response = await api.get('/usuarios/equipo-medico');
         setEquipo(response.data);
       } catch (err) {
         console.error('Error al cargar el equipo:', err);

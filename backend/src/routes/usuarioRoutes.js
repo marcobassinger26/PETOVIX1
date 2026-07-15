@@ -13,6 +13,13 @@ router.get('/veterinarios',
     usuarioController.getVeterinarios
 );
 
+// 🔒 RUTA PROTEGIDA: Solo el Jefe puede editar los datos de un veterinario
+router.put('/veterinarios/:id', 
+    authMiddleware,                      // Candado 1
+    verificarRol(['Administrador']),     // Candado 2
+    usuarioController.actualizarVeterinario
+);
+
 // 🔒 RUTA PROTEGIDA: Solo el Jefe puede eliminar personal
 router.delete('/veterinarios/:id', 
     authMiddleware,                      // Candado 1

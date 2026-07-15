@@ -10,6 +10,18 @@ import InfoTutor from './InfoTutor';
 import HistorialMedico from './HistorialMedico';
 import ModalEvento from './ModalEvento';
 import ModalTutor from './ModalTutor';
+import FondoPetovix from '../common/FondoPetovix';
+
+// Botón de regreso reutilizado en los tres estados de la pantalla
+function BotonVolver({ onClick, texto }) {
+  return (
+    <button onClick={onClick}
+      className="boton-petovix-secundario aparecer mb-6 !py-2 !px-4 text-sm flex items-center gap-2 group w-fit">
+      <span className="transform group-hover:-translate-x-1 transition-transform">←</span>
+      {texto}
+    </button>
+  );
+}
 
 export default function Expediente() {
   const { id } = useParams();
@@ -31,6 +43,8 @@ export default function Expediente() {
   const [mostrarModalEvento, setMostrarModalEvento] = useState(false);
   const [eventoEditar, setEventoEditar] = useState(null); // null = modo crear
   const [mostrarModalTutor, setMostrarModalTutor] = useState(false);
+
+  const textoVolver = puedeEditar ? 'Volver al buscador' : 'Volver a mis mascotas';
 
   // Abrir modal en modo CREAR
   const abrirModalNuevo = () => {
@@ -63,82 +77,82 @@ export default function Expediente() {
   };
 
   if (loading) return (
-    <div className="min-h-screen bg-gray-50">
-      <LoadingSpinner mensaje="Cargando expediente..." />
-    </div>
+    <FondoPetovix>
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner mensaje="Cargando expediente..." />
+      </div>
+    </FondoPetovix>
   );
 
   if (error) return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <button onClick={() => navigate(-1)}
-        className="mb-6 bg-white border border-green-200 text-green-800 font-bold py-2 px-4 rounded-full shadow-sm hover:bg-green-50 transition-all flex items-center gap-2 group w-fit">
-        <span className="transform group-hover:-translate-x-1 transition-transform">←</span>
-        {puedeEditar ? 'Volver al buscador' : 'Volver a mis mascotas'}
-      </button>
-      <ErrorMessage mensaje={error} onRetry={() => window.location.reload()} />
-    </div>
+    <FondoPetovix>
+      <div className="p-8">
+        <BotonVolver onClick={() => navigate(-1)} texto={textoVolver} />
+        <ErrorMessage mensaje={error} onRetry={() => window.location.reload()} />
+      </div>
+    </FondoPetovix>
   );
 
   if (!animal) return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <ErrorMessage mensaje="No se encontró el expediente" />
-    </div>
+    <FondoPetovix>
+      <div className="p-8">
+        <ErrorMessage mensaje="No se encontró el expediente" />
+      </div>
+    </FondoPetovix>
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8 relative">
+    <FondoPetovix>
+      <div className="p-4 md:p-8">
 
-      <button onClick={() => navigate(-1)}
-        className="mb-6 bg-white border border-green-200 text-green-800 font-bold py-2 px-4 rounded-full shadow-sm hover:bg-green-50 transition-all flex items-center gap-2 group w-fit">
-        <span className="transform group-hover:-translate-x-1 transition-transform">←</span>
-        {puedeEditar ? 'Volver al buscador' : 'Volver a mis mascotas'}
-      </button>
+        <BotonVolver onClick={() => navigate(-1)} texto={textoVolver} />
 
-      <div className="max-w-5xl mx-auto bg-white rounded-3xl shadow-xl overflow-hidden">
+        <div className="max-w-5xl mx-auto tarjeta-petovix aparecer overflow-hidden">
 
-        <HeaderExpediente
-          animal={animal}
-          esVeterinario={puedeEditar}
-          onCambiarFoto={handleCambiarFoto}
-        />
+          <HeaderExpediente
+            animal={animal}
+            esVeterinario={puedeEditar}
+            onCambiarFoto={handleCambiarFoto}
+          />
 
-        <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div>
-            <InfoBasica animal={animal} esVeterinario={puedeEditar} onActualizar={actualizarAnimal} />
-            <InfoTutor
-              animal={animal}
-              esVeterinario={puedeEditar}
-              onActualizarTutor={actualizarTutor}
-              onAgregarTutor={() => setMostrarModalTutor(true)}
-            />
-          </div>
+          <div className="p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="aparecer" style={{ animationDelay: '100ms' }}>
+              <InfoBasica animal={animal} esVeterinario={puedeEditar} onActualizar={actualizarAnimal} />
+              <InfoTutor
+                animal={animal}
+                esVeterinario={puedeEditar}
+                onActualizarTutor={actualizarTutor}
+                onAgregarTutor={() => setMostrarModalTutor(true)}
+              />
+            </div>
 
-          <div>
-            <HistorialMedico
-              historial={animal.HistorialMedicos}
-              esVeterinario={puedeEditar}
-              onAgregarEvento={abrirModalNuevo}
-              onEditarEvento={abrirModalEditar}
-              onEliminarEvento={eliminarEvento}
-            />
+            <div className="aparecer" style={{ animationDelay: '200ms' }}>
+              <HistorialMedico
+                historial={animal.HistorialMedicos}
+                esVeterinario={puedeEditar}
+                onAgregarEvento={abrirModalNuevo}
+                onEditarEvento={abrirModalEditar}
+                onEliminarEvento={eliminarEvento}
+              />
+            </div>
           </div>
         </div>
+
+        {puedeEditar && mostrarModalEvento && (
+          <ModalEvento
+            eventoEditar={eventoEditar}
+            onCerrar={() => { setMostrarModalEvento(false); setEventoEditar(null); }}
+            onGuardar={handleGuardarEvento}
+          />
+        )}
+
+        {puedeEditar && mostrarModalTutor && (
+          <ModalTutor
+            onCerrar={() => setMostrarModalTutor(false)}
+            onGuardar={handleGuardarTutor}
+          />
+        )}
       </div>
-
-      {puedeEditar && mostrarModalEvento && (
-        <ModalEvento
-          eventoEditar={eventoEditar}
-          onCerrar={() => { setMostrarModalEvento(false); setEventoEditar(null); }}
-          onGuardar={handleGuardarEvento}
-        />
-      )}
-
-      {puedeEditar && mostrarModalTutor && (
-        <ModalTutor
-          onCerrar={() => setMostrarModalTutor(false)}
-          onGuardar={handleGuardarTutor}
-        />
-      )}
-    </div>
+    </FondoPetovix>
   );
 }

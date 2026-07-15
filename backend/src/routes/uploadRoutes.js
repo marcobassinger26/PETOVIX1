@@ -4,6 +4,7 @@ const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 const authMiddleware = require('../middleware/authMiddleware');
+const { verificarRol } = require('../middleware/roleMiddleware');
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -76,6 +77,22 @@ router.post('/foto-perfil', authMiddleware, upload.single('imagen'), async (req,
         await Usuario.update({ foto_perfil: url }, { where: { id_usuario } });
 
         res.json({ mensaje: 'Foto de perfil actualizada', url });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// ✅ RUTA 4: El Admin sube la foto de perfil de OTRO usuario (al dar de alta a un veterinario)
+router.post('/foto-perfil/:id_usuario', authMiddleware, verificarRol(['Administrador']), upload.single('imagen'), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ mensaje: 'No se recibió ninguna imagen.' });
+        }
+        const { id_usuario } = req.params;
+        const url = `http://localhost:3000/${req.file.path.replace(/\\/g, "/")}`;
+
+        await Usuario.update({ foto_perfil: url }, { where: { id_usuario } });
+        res.json({ mensaje: 'Foto de perfil asignada', url });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

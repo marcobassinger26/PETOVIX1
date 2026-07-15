@@ -19,7 +19,7 @@ const generarCodigoUnico = async () => {
 // 1. REGISTRO
 exports.register = async (req, res) => {
     try {
-        const { nombre, email, password, rol, telefono, direccion } = req.body;
+        const { nombre, email, password, rol, telefono, direccion, especialidad, bio, anios_experiencia } = req.body;
 
         if (!nombre?.trim() || !email?.trim() || !password) {
             return res.status(400).json({ mensaje: 'Nombre, email y contraseña son obligatorios.' });
@@ -59,14 +59,22 @@ exports.register = async (req, res) => {
         const salt = await bcrypt.genSalt(10);
         const passwordEncriptada = await bcrypt.hash(password, salt);
 
-        await Usuario.create({
+        const nuevoUsuario = await Usuario.create({
             nombre, email,
             password: passwordEncriptada,
             rol: rol || 'Tutor',
-            id_cliente
+            id_cliente,
+            // 🌟 Campos del directorio público (solo aplican a veterinarios)
+            especialidad: especialidad || null,
+            bio: bio || null,
+            anios_experiencia: anios_experiencia || null
         });
 
-        res.json({ mensaje: 'Cuenta creada con éxito', codigo_tutor: codigoGenerado });
+        res.json({
+            mensaje: 'Cuenta creada con éxito',
+            codigo_tutor: codigoGenerado,
+            id_usuario: nuevoUsuario.id_usuario // 👈 necesario para subir la foto desde el panel admin
+        });
     } catch (error) {
         console.error("🔴 ERROR EN REGISTRO:", error); // 👈 ¡El megáfono!
         res.status(500).json({ mensaje: error.message });

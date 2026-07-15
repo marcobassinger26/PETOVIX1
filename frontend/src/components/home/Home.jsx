@@ -6,6 +6,7 @@ import Navbar from '../common/Navbar';
 import Footer from '../common/Footer';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import api from '../../services/api';
+import FondoPetovix from '../common/FondoPetovix';
 
 // ─────────────────────────────────────────────
 // MODAL NUEVA CITA
@@ -52,22 +53,22 @@ function ModalNuevaCita({ onCerrar, onGuardar }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl w-full max-w-md overflow-hidden aparecer">
 
-        <div className="bg-green-700 p-4 text-white flex justify-between items-center">
+        <div className="bg-gradient-to-r from-emerald-500 to-teal-600 p-4 text-white flex justify-between items-center">
           <h3 className="font-bold text-lg">📅 Nueva Cita</h3>
-          <button onClick={onCerrar} className="text-2xl leading-none hover:text-gray-200">✕</button>
+          <button onClick={onCerrar} className="text-2xl leading-none hover:text-teal-100 transition-colors">✕</button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-1">Paciente</label>
+            <label className="block text-sm font-bold text-teal-900 mb-1">Paciente</label>
             <select
               required
               value={form.id_animal}
               onChange={(e) => setForm({ ...form, id_animal: e.target.value })}
-              className="w-full border rounded-lg p-2 focus:outline-none focus:border-green-500"
+              className="input-petovix"
             >
               <option value="">Selecciona un paciente...</option>
               {animales.map((a) => (
@@ -80,48 +81,48 @@ function ModalNuevaCita({ onCerrar, onGuardar }) {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1">Fecha</label>
+              <label className="block text-sm font-bold text-teal-900 mb-1">Fecha</label>
               <input type="date" required value={form.fecha}
                 min={hoyISO}
                 onChange={handleFecha}
-                className={`w-full border rounded-lg p-2 focus:outline-none focus:border-green-500 ${errorFecha ? 'border-red-400' : ''}`}
+                className={`input-petovix ${errorFecha ? 'border-red-400 focus:border-red-400 focus:ring-red-200' : ''}`}
               />
               {errorFecha && <p className="text-xs text-red-500 mt-1">{errorFecha}</p>}
             </div>
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1">Hora</label>
+              <label className="block text-sm font-bold text-teal-900 mb-1">Hora</label>
               <input type="time" required value={form.hora}
                 onChange={(e) => setForm({ ...form, hora: e.target.value })}
-                className="w-full border rounded-lg p-2 focus:outline-none focus:border-green-500"
+                className="input-petovix"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-1">Motivo</label>
+            <label className="block text-sm font-bold text-teal-900 mb-1">Motivo</label>
             <input type="text" required placeholder="Ej: Vacuna anual, revisión general..."
               value={form.motivo}
               onChange={(e) => setForm({ ...form, motivo: e.target.value })}
-              className="w-full border rounded-lg p-2 focus:outline-none focus:border-green-500"
+              className="input-petovix"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-1">Notas (opcional)</label>
+            <label className="block text-sm font-bold text-teal-900 mb-1">Notas (opcional)</label>
             <textarea rows="2" placeholder="Observaciones previas..."
               value={form.notas}
               onChange={(e) => setForm({ ...form, notas: e.target.value })}
-              className="w-full border rounded-lg p-2 focus:outline-none focus:border-green-500"
+              className="input-petovix resize-none"
             />
           </div>
 
           <div className="flex gap-2 pt-2">
             <button type="button" onClick={onCerrar}
-              className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-xl font-bold hover:bg-gray-300">
+              className="boton-petovix-secundario flex-1">
               Cancelar
             </button>
             <button type="submit" disabled={loading}
-              className="flex-1 bg-green-700 text-white py-3 rounded-xl font-bold hover:bg-green-800 disabled:opacity-50">
+              className="boton-petovix flex-1">
               {loading ? 'Guardando...' : '✅ Agendar'}
             </button>
           </div>
@@ -184,16 +185,17 @@ function HomeVeterinario({ usuario }) {
     <main className="flex-grow container mx-auto px-4 py-8">
 
       {/* ENCABEZADO */}
-      <div className="mb-10">
-        <h2 className="text-3xl font-extrabold text-green-900">
-          Hola veterinari@, {usuario?.nombre || 'Bienvenido'}
+      <div className="mb-10 aparecer">
+        <span className="badge-petovix mb-3">🩺 Panel clínico</span>
+        <h2 className="text-3xl md:text-4xl font-extrabold text-teal-900 mt-2">
+          Hola veterinari@, <span className="titulo-degradado">{usuario?.nombre || 'Bienvenido'}</span>
         </h2>
-        <p className="text-gray-500">Panel de control clínico - PETOVIX</p>
+        <p className="text-teal-800/60 mt-1">Panel de control clínico — PETOVIX</p>
       </div>
 
       {/* NOTIFICACIÓN CITA PRÓXIMA */}
       {notificacion && (
-        <div className="mb-6 bg-amber-50 border border-amber-300 rounded-2xl px-5 py-4 flex items-center gap-4 shadow-sm animate-pulse">
+        <div className="mb-6 bg-amber-50/90 backdrop-blur border border-amber-300 rounded-2xl px-5 py-4 flex items-center gap-4 shadow-sm animate-pulse">
           <span className="text-2xl">🔔</span>
           <div className="flex-1">
             <p className="font-bold text-amber-800 text-sm">
@@ -216,11 +218,11 @@ function HomeVeterinario({ usuario }) {
 
             {/* TARJETA: PACIENTES */}
             <Link to="/dashboard"
-              className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-all flex items-center gap-5 group"
+              className="tarjeta-petovix tarjeta-petovix-hover aparecer p-6 flex items-center gap-5 group"
               onMouseEnter={() => lottiePatitas?.play()}
               onMouseLeave={() => lottiePatitas?.stop()}
             >
-              <div className="bg-blue-50 p-2 rounded-xl group-hover:bg-blue-100 transition-colors w-20 h-20 flex items-center justify-center overflow-hidden">
+              <div className="bg-teal-50 p-2 rounded-2xl group-hover:bg-teal-100 transition-colors w-20 h-20 flex items-center justify-center overflow-hidden">
                 <DotLottieReact
                   src="https://lottie.host/6fae18fd-618f-4f23-a9b2-0f41fa9057df/COP9BPwka3.lottie"
                   loop autoplay={false}
@@ -229,18 +231,18 @@ function HomeVeterinario({ usuario }) {
                 />
               </div>
               <div>
-                <h3 className="font-bold text-gray-800">Pacientes</h3>
-                <p className="text-xs text-gray-500">Gestión de historiales</p>
+                <h3 className="font-bold text-teal-900">Pacientes</h3>
+                <p className="text-xs text-teal-800/60">Gestión de historiales</p>
               </div>
             </Link>
 
             {/* TARJETA: NUEVO INGRESO */}
             <Link to="/nueva-mascota"
-              className="bg-green-700 p-6 rounded-2xl shadow-sm hover:bg-green-800 transition-all flex items-center gap-5 text-white group"
+              className="aparecer p-6 rounded-3xl shadow-lg shadow-emerald-900/20 bg-gradient-to-br from-emerald-500 to-teal-600 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 flex items-center gap-5 text-white group"
               onMouseEnter={() => lottieMas?.play()}
               onMouseLeave={() => lottieMas?.stop()}
             >
-              <div className="bg-green-600 p-2 rounded-xl group-hover:bg-green-500 transition-colors w-20 h-20 flex items-center justify-center overflow-hidden">
+              <div className="bg-white/20 p-2 rounded-2xl group-hover:bg-white/30 transition-colors w-20 h-20 flex items-center justify-center overflow-hidden">
                 <DotLottieReact
                   src="https://lottie.host/6c3a8090-fc59-4b26-ab90-78830517ded6/oXynHDLWes.lottie"
                   loop autoplay={false}
@@ -250,13 +252,13 @@ function HomeVeterinario({ usuario }) {
               </div>
               <div>
                 <h3 className="font-bold">Nuevo Ingreso</h3>
-                <p className="text-xs text-green-100">Registro inmediato</p>
+                <p className="text-xs text-emerald-100">Registro inmediato</p>
               </div>
             </Link>
           </div>
 
           {/* CARRUSEL */}
-          <div className="rounded-3xl overflow-hidden shadow-xl relative h-[250px] bg-gray-900">
+          <div className="rounded-3xl overflow-hidden shadow-xl shadow-teal-900/10 relative h-[250px] bg-gray-900 aparecer">
             {imagenesCarrusel.map((img, index) => (
               <img key={index} src={img} alt="Clínica"
                 className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${index === imagenActual ? 'opacity-40' : 'opacity-0'}`}
@@ -264,20 +266,20 @@ function HomeVeterinario({ usuario }) {
             ))}
             <div className="absolute inset-0 flex flex-col justify-center px-10">
               <h3 className="text-white text-2xl font-bold italic">PETOVIX Tech</h3>
-              <p className="text-green-300">Monitoreo médico avanzado 24/7</p>
+              <p className="text-emerald-300">Monitoreo médico avanzado 24/7</p>
             </div>
           </div>
         </div>
 
         {/* COLUMNA DERECHA: AGENDA REAL */}
-        <div className="bg-white rounded-3xl shadow-lg border border-gray-50 flex flex-col overflow-hidden">
-          <div className="bg-green-50 p-5 border-b border-green-100 flex justify-between items-center">
-            <h3 className="font-bold text-green-900 flex items-center gap-2">
+        <div className="tarjeta-petovix aparecer flex flex-col overflow-hidden">
+          <div className="bg-gradient-to-r from-teal-50 to-emerald-50 p-5 border-b border-teal-100 flex justify-between items-center">
+            <h3 className="font-bold text-teal-900 flex items-center gap-2">
               Agenda del Día
             </h3>
             <button
               onClick={() => setMostrarModal(true)}
-              className="text-xs bg-green-700 text-white px-3 py-1 rounded-full hover:bg-green-800 transition"
+              className="text-xs font-bold text-white px-4 py-1.5 rounded-full bg-gradient-to-r from-emerald-500 to-teal-600 shadow-sm hover:scale-105 transition-transform"
             >
               + Nueva
             </button>
@@ -287,15 +289,15 @@ function HomeVeterinario({ usuario }) {
             {loadingCitas ? (
               <div className="text-center py-8">
                 <p className="text-2xl animate-bounce">🐾</p>
-                <p className="text-xs text-gray-400 mt-2">Cargando citas...</p>
+                <p className="text-xs text-teal-800/50 mt-2">Cargando citas...</p>
               </div>
             ) : citasHoy.length === 0 ? (
               <div className="text-center py-8">
                 <p className="text-3xl mb-2">📭</p>
-                <p className="text-xs text-gray-400 italic">No hay citas para hoy</p>
+                <p className="text-xs text-teal-800/50 italic">No hay citas para hoy</p>
                 <button
                   onClick={() => setMostrarModal(true)}
-                  className="mt-4 text-xs text-green-700 font-bold underline hover:text-green-900"
+                  className="mt-4 text-xs text-teal-700 font-bold underline hover:text-teal-900"
                 >
                   Agendar una cita
                 </button>
@@ -303,39 +305,39 @@ function HomeVeterinario({ usuario }) {
             ) : (
               citasHoy.map((cita) => (
                 <div key={cita.id_cita}
-                  className={`flex items-start gap-3 p-3 hover:bg-slate-50 rounded-xl transition-colors border-l-4 ${
-                    cita.estado === 'Completada' ? 'border-green-400 opacity-60' :
+                  className={`flex items-start gap-3 p-3 hover:bg-teal-50/60 rounded-xl transition-colors border-l-4 ${
+                    cita.estado === 'Completada' ? 'border-emerald-400 opacity-60' :
                     cita.estado === 'Cancelada'  ? 'border-red-300 opacity-40' :
-                                                   'border-blue-400'
+                                                   'border-teal-400'
                   }`}
                 >
                   <div className="text-center min-w-[45px]">
-                    <p className="text-sm font-bold text-gray-800">
+                    <p className="text-sm font-bold text-teal-900">
                       {cita.hora?.slice(0, 5)}
                     </p>
-                    <p className="text-[10px] text-gray-400 uppercase">
+                    <p className="text-[10px] text-teal-800/50 uppercase">
                       {parseInt(cita.hora) >= 12 ? 'PM' : 'AM'}
                     </p>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold text-gray-800 truncate">
+                    <p className="text-sm font-bold text-teal-900 truncate">
                       {cita.Animal?.nombre}
-                      <span className="font-normal text-gray-500"> ({cita.Animal?.raza || cita.Animal?.especie})</span>
+                      <span className="font-normal text-teal-800/60"> ({cita.Animal?.raza || cita.Animal?.especie})</span>
                     </p>
-                    <p className="text-xs text-gray-500 truncate">{cita.motivo}</p>
+                    <p className="text-xs text-teal-800/60 truncate">{cita.motivo}</p>
                   </div>
                   {cita.estado === 'Pendiente' && (
                     <div className="flex gap-1 flex-shrink-0">
                       <button
                         onClick={() => completarCita(cita.id_cita)}
-                        className="text-gray-300 hover:text-green-500 transition text-sm"
+                        className="text-teal-200 hover:text-emerald-500 transition text-sm"
                         title="Marcar como completada"
                       >
                         ✓
                       </button>
                       <button
                         onClick={() => cancelarCita(cita.id_cita)}
-                        className="text-gray-300 hover:text-red-400 transition text-sm"
+                        className="text-teal-200 hover:text-red-400 transition text-sm"
                         title="Cancelar cita"
                       >
                         ✕
@@ -344,7 +346,7 @@ function HomeVeterinario({ usuario }) {
                   )}
                   {cita.estado !== 'Pendiente' && (
                     <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold flex-shrink-0 ${
-                      cita.estado === 'Completada' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-500'
+                      cita.estado === 'Completada' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-500'
                     }`}>
                       {cita.estado}
                     </span>
@@ -356,7 +358,7 @@ function HomeVeterinario({ usuario }) {
 
           <Link
             to="/calendario"
-            className="m-5 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl text-sm font-bold text-gray-600 transition-colors text-center block"
+            className="boton-petovix-secundario m-5 text-sm text-center block"
           >
             Ver Calendario Completo →
           </Link>
@@ -405,13 +407,14 @@ function HomeTutor() {
     <main className="flex-grow container mx-auto px-4 py-8">
 
       {/* ENCABEZADO */}
-      <div className="mb-8">
-        <h2 className="text-3xl font-extrabold text-green-900">
+      <div className="mb-8 aparecer">
+        <span className="badge-petovix mb-3">🐾 Portal de mascotas</span>
+        <h2 className="text-3xl md:text-4xl font-extrabold text-teal-900 mt-2">
           {isAuthenticated
-            ? `Hola, ${usuario?.nombre?.split(' ')[0] || 'Bienvenido'} `
-            : 'Bienvenido a PETOVIX '}
+            ? <>Hola, <span className="titulo-degradado">{usuario?.nombre?.split(' ')[0] || 'Bienvenido'}</span></>
+            : <>Bienvenido a <span className="titulo-degradado">PETOVIX</span></>}
         </h2>
-        <p className="text-gray-500">
+        <p className="text-teal-800/60 mt-1">
           {isAuthenticated ? 'Tu portal de mascotas en PETOVIX' : 'Cuidando a tus mejores amigos con tecnología veterinaria.'}
         </p>
       </div>
@@ -425,33 +428,33 @@ function HomeTutor() {
           {isAuthenticated && (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Link to="/dashboard"
-              className="bg-white p-6 rounded-2xl shadow-sm border border-green-100 hover:shadow-md hover:border-green-300 transition-all flex items-center gap-5 group"
+              className="tarjeta-petovix tarjeta-petovix-hover aparecer p-6 flex items-center gap-5 group"
             >
-              <div className="bg-green-50 w-16 h-16 rounded-xl flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">
+              <div className="bg-emerald-50 w-16 h-16 rounded-2xl flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">
                 🐾
               </div>
               <div>
-                <h3 className="font-bold text-gray-800">Mis Mascotas</h3>
-                <p className="text-xs text-gray-500">Ver expedientes</p>
+                <h3 className="font-bold text-teal-900">Mis Mascotas</h3>
+                <p className="text-xs text-teal-800/60">Ver expedientes</p>
               </div>
             </Link>
 
             <Link to="/perfil"
-              className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-all flex items-center gap-5 group"
+              className="tarjeta-petovix tarjeta-petovix-hover aparecer p-6 flex items-center gap-5 group"
             >
-              <div className="bg-blue-50 w-16 h-16 rounded-xl flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">
+              <div className="bg-teal-50 w-16 h-16 rounded-2xl flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">
                 👤
               </div>
               <div>
-                <h3 className="font-bold text-gray-800">Mi Perfil</h3>
-                <p className="text-xs text-gray-500">Datos de cuenta</p>
+                <h3 className="font-bold text-teal-900">Mi Perfil</h3>
+                <p className="text-xs text-teal-800/60">Datos de cuenta</p>
               </div>
             </Link>
           </div>
           )} {/* fin isAuthenticated acceso rápido */}
 
           {/* CARRUSEL */}
-          <div className="rounded-3xl overflow-hidden shadow-xl relative h-[280px] bg-gray-900">
+          <div className="rounded-3xl overflow-hidden shadow-xl shadow-teal-900/10 relative h-[280px] bg-gray-900 aparecer">
             {imagenesCarrusel.map((img, index) => (
               <img key={index} src={img} alt="Clínica Veterinaria"
                 className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${index === imagenActual ? 'opacity-100' : 'opacity-0'}`}
@@ -460,7 +463,7 @@ function HomeTutor() {
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-8">
               <div>
                 <h3 className="text-white text-xl font-bold">Instalaciones de primer nivel</h3>
-                <p className="text-green-300 text-sm">para tus mascotas 🐶🐱</p>
+                <p className="text-emerald-300 text-sm">para tus mascotas 🐶🐱</p>
               </div>
             </div>
           </div>
@@ -468,52 +471,52 @@ function HomeTutor() {
 
         {/* COLUMNA DERECHA: MIS CITAS — solo si está logueado */}
         {isAuthenticated && (
-        <div className="bg-white rounded-3xl shadow-lg border border-gray-50 flex flex-col overflow-hidden">
-          <div className="bg-green-50 p-5 border-b border-green-100">
-            <h3 className="font-bold text-green-900 flex items-center gap-2">
+        <div className="tarjeta-petovix aparecer flex flex-col overflow-hidden">
+          <div className="bg-gradient-to-r from-teal-50 to-emerald-50 p-5 border-b border-teal-100">
+            <h3 className="font-bold text-teal-900 flex items-center gap-2">
               📅 Mis Próximas Citas
             </h3>
-            <p className="text-xs text-gray-400 mt-0.5">Solo lectura — el veterinario las agenda</p>
+            <p className="text-xs text-teal-800/50 mt-0.5">Solo lectura — el veterinario las agenda</p>
           </div>
 
           <div className="p-5 space-y-3 flex-grow overflow-y-auto max-h-[380px]">
             {loadingCitas ? (
               <div className="text-center py-8">
                 <p className="text-2xl animate-bounce">🐾</p>
-                <p className="text-xs text-gray-400 mt-2">Cargando citas...</p>
+                <p className="text-xs text-teal-800/50 mt-2">Cargando citas...</p>
               </div>
             ) : citasProximas.length === 0 ? (
               <div className="text-center py-8">
                 <p className="text-4xl mb-3">📭</p>
-                <p className="text-sm font-bold text-gray-600">Sin citas próximas</p>
-                <p className="text-xs text-gray-400 mt-1">
+                <p className="text-sm font-bold text-teal-900">Sin citas próximas</p>
+                <p className="text-xs text-teal-800/50 mt-1">
                   Cuando el veterinario agende una cita para tu mascota, aparecerá aquí.
                 </p>
               </div>
             ) : (
               citasProximas.map((cita) => (
                 <div key={cita.id_cita}
-                  className="flex items-start gap-3 p-3 bg-green-50 rounded-xl border border-green-100"
+                  className="flex items-start gap-3 p-3 bg-emerald-50/70 rounded-xl border border-emerald-100"
                 >
-                  <div className="bg-green-700 text-white rounded-lg px-2 py-1 text-center min-w-[50px]">
+                  <div className="bg-gradient-to-br from-emerald-500 to-teal-600 text-white rounded-lg px-2 py-1 text-center min-w-[50px] shadow-sm">
                     <p className="text-xs font-bold">{cita.hora?.slice(0, 5)}</p>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold text-gray-800 truncate">
+                    <p className="text-sm font-bold text-teal-900 truncate">
                       {cita.Animal?.nombre}
-                      <span className="font-normal text-gray-500 text-xs"> · {cita.Animal?.especie}</span>
+                      <span className="font-normal text-teal-800/60 text-xs"> · {cita.Animal?.especie}</span>
                     </p>
-                    <p className="text-xs text-gray-500 truncate">{cita.motivo}</p>
-                    <p className="text-xs text-green-700 font-semibold mt-0.5">
+                    <p className="text-xs text-teal-800/60 truncate">{cita.motivo}</p>
+                    <p className="text-xs text-teal-700 font-semibold mt-0.5">
                       {new Date(cita.fecha + 'T00:00:00').toLocaleDateString('es-MX', {
                         weekday: 'short', day: 'numeric', month: 'short'
                       })}
                     </p>
                   </div>
                   <span className={`text-xs px-2 py-0.5 rounded-full font-bold flex-shrink-0 ${
-                    cita.estado === 'Completada' ? 'bg-green-100 text-green-700' :
+                    cita.estado === 'Completada' ? 'bg-emerald-100 text-emerald-700' :
                     cita.estado === 'Cancelada'  ? 'bg-red-100 text-red-600' :
-                                                    'bg-blue-100 text-blue-700'
+                                                    'bg-teal-100 text-teal-700'
                   }`}>
                     {cita.estado}
                   </span>
@@ -522,8 +525,8 @@ function HomeTutor() {
             )}
           </div>
 
-          <div className="p-5 border-t border-gray-100">
-            <p className="text-xs text-center text-gray-400">
+          <div className="p-5 border-t border-teal-50">
+            <p className="text-xs text-center text-teal-800/50">
               Para agendar una cita, contacta a tu veterinario.
             </p>
           </div>
@@ -540,10 +543,12 @@ function HomeTutor() {
 export default function Home() {
   const { esVeterinario, esAdministrador, usuario } = useAuth();
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50">
-      <Navbar />
-      {(esVeterinario || esAdministrador) ? <HomeVeterinario usuario={usuario} /> : <HomeTutor />}
-      <Footer />
-    </div>
+    <FondoPetovix>
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        {(esVeterinario || esAdministrador) ? <HomeVeterinario usuario={usuario} /> : <HomeTutor />}
+        <Footer />
+      </div>
+    </FondoPetovix>
   );
 }

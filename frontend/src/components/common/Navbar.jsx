@@ -10,14 +10,14 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="bg-white shadow-md px-8 py-4 flex justify-between items-center sticky top-0 z-50">
+    <nav className="bg-white/70 backdrop-blur-md border-b border-white/60 shadow-sm shadow-teal-900/5 px-8 py-4 flex justify-between items-center sticky top-0 z-50">
 
       <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition">
         <img src="/petovixlogo1.png" alt="Logo" className="h-16 w-24 object-contain" />
-        <h1 className="text-xl md:text-2xl font-bold text-green-900">
+        <h1 className="text-xl md:text-2xl font-bold text-teal-900">
           PETOVIX
           {isAuthenticated && (
-            <span className="text-sm font-normal text-gray-500 hidden md:inline ml-2">
+            <span className="text-sm font-normal text-teal-800/60 hidden md:inline ml-2">
               | {esAdministrador ? 'Centro de Control Admin' : (esTutor ? 'Portal de Dueños' : 'Panel Veterinario')}
             </span>
           )}
@@ -26,10 +26,10 @@ export default function Navbar() {
 
       <div className="flex items-center gap-4">
 
-        {/* 🌟 NUEVO ENLACE PÚBLICO: Visible siempre */}
-        <Link 
+        {/* 🌟 ENLACE PÚBLICO: Visible siempre */}
+        <Link
           to="/nuestro-equipo"
-          className="text-gray-600 font-bold text-sm hover:text-teal-700 transition-colors flex items-center gap-1.5 mr-2"
+          className="text-teal-800/70 font-bold text-sm hover:text-teal-700 transition-colors flex items-center gap-1.5 mr-2"
         >
           <span className="text-lg">👩‍⚕️</span>
           <span className="hidden md:inline">Nuestro Equipo</span>
@@ -40,7 +40,7 @@ export default function Navbar() {
             {/* Botón Panel Admin */}
             {esAdministrador && (
               <Link to="/panel-admin"
-                className="bg-teal-700 text-white font-bold text-sm px-4 py-1.5 rounded-full hover:bg-teal-800 transition-colors shadow-sm flex items-center gap-2"
+                className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold text-sm px-4 py-1.5 rounded-full hover:scale-105 transition-transform shadow-sm flex items-center gap-2"
               >
                 <span>🛡️</span>
                 <span className="hidden md:inline">Panel Admin</span>
@@ -50,7 +50,7 @@ export default function Navbar() {
             {/* ✅ Botón Mis Citas — solo para tutores */}
             {esTutor && (
               <Link to="/mis-citas"
-                className="bg-blue-600 text-white font-bold text-sm px-4 py-1.5 rounded-full hover:bg-blue-700 transition-colors shadow-sm flex items-center gap-2"
+                className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold text-sm px-4 py-1.5 rounded-full hover:scale-105 transition-transform shadow-sm flex items-center gap-2"
               >
                 <span>📅</span>
                 <span className="hidden md:inline">Mis Citas</span>
@@ -58,13 +58,13 @@ export default function Navbar() {
             )}
 
             {/* Nombre del usuario */}
-            <span className="text-sm text-gray-600 font-bold hidden md:block border-l-2 border-gray-200 pl-4">
+            <span className="text-sm text-teal-800/70 font-bold hidden md:block border-l-2 border-teal-100 pl-4">
               Hola, {usuario?.nombre}
             </span>
 
             {/* Perfil */}
             <Link to="/perfil"
-              className="text-gray-500 hover:text-green-700 transition transform hover:rotate-90 duration-300 text-xl inline-block"
+              className="text-teal-800/50 hover:text-teal-700 transition transform hover:rotate-90 duration-300 text-xl inline-block"
               title="Mi Perfil / Ajustes"
             >
               ⚙️
@@ -79,7 +79,7 @@ export default function Navbar() {
           </>
         ) : (
           <Link to="/login"
-            className="bg-green-700 text-white font-bold px-6 py-2 rounded-full hover:bg-green-800 transition-colors shadow-md"
+            className="boton-petovix !px-6 !py-2 text-sm"
           >
             Entrar
           </Link>

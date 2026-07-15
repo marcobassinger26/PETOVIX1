@@ -34,6 +34,20 @@ const Usuario = sequelize.define('Usuario', {
     foto_perfil: {
         type: DataTypes.STRING(255),
         allowNull: true
+    },
+
+     // 🌟 Campos del directorio público
+    especialidad: {
+        type: DataTypes.STRING(100),
+        allowNull: true
+    },
+    bio: {
+        type: DataTypes.TEXT,
+        allowNull: true
+    },
+    anios_experiencia: {
+        type: DataTypes.INTEGER,
+        allowNull: true
     }
 }, {
     tableName: 'usuarios',

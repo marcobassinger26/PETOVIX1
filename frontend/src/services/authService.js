@@ -8,12 +8,13 @@ export const authService = {
   },
 
   // 📝 Registro de usuario
-  register: async (nombre, email, password, rol = 'Veterinario') => {
+  register: async (nombre, email, password, rol = 'Veterinario', datosExtra = {}) => {
     const response = await api.post('/auth/register', {
       nombre,
       email,
       password,
-      rol
+      rol,
+      ...datosExtra // 🌟 especialidad, bio, anios_experiencia (opcionales)
     });
     return response.data;
   },

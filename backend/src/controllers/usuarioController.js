@@ -16,6 +16,10 @@ exports.getVeterinarios = async (req, res) => {
                 'nombre', 
                 'email', 
                 'rol',
+                'foto_perfil',
+                'especialidad',
+                'bio',
+                'anios_experiencia',
                 // 📊 Cálculo en tiempo real usando el nombre EXACTO de tu tabla
                 [
                     sequelize.literal(`(
@@ -64,7 +68,7 @@ exports.getEquipoMedico = async (req, res) => {
             where: { 
                 rol: 'Veterinario' 
             },
-            attributes: ['id_usuario', 'nombre', 'foto_perfil'], // 🛡️ CERO datos sensibles
+            attributes: ['id_usuario', 'nombre', 'foto_perfil', 'especialidad', 'bio', 'anios_experiencia'], // 🛡️ CERO datos sensibles
             order: [['nombre', 'ASC']]
         });
         
@@ -72,5 +76,35 @@ exports.getEquipoMedico = async (req, res) => {
     } catch (error) {
         console.error("🔴 ERROR AL CARGAR EQUIPO MÉDICO:", error);
         res.status(500).json({ error: 'Error al cargar el directorio médico' });
+    }
+};
+
+// ✏️ ACTUALIZAR DATOS DE UN VETERINARIO (solo Admin)
+exports.actualizarVeterinario = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { nombre, especialidad, bio, anios_experiencia } = req.body;
+
+        const veterinario = await Usuario.findOne({
+            where: { id_usuario: id, rol: 'Veterinario' }
+        });
+        if (!veterinario) {
+            return res.status(404).json({ mensaje: 'Veterinario no encontrado' });
+        }
+
+        if (nombre?.trim()) veterinario.nombre = nombre.trim();
+        // Permitimos vaciar los campos públicos enviando '' (se guarda como null)
+        if (especialidad !== undefined) veterinario.especialidad = especialidad?.trim() || null;
+        if (bio !== undefined) veterinario.bio = bio?.trim() || null;
+        if (anios_experiencia !== undefined) {
+            const anios = parseInt(anios_experiencia);
+            veterinario.anios_experiencia = Number.isNaN(anios) ? null : anios;
+        }
+
+        await veterinario.save();
+        res.json({ mensaje: 'Datos del veterinario actualizados ✅' });
+    } catch (error) {
+        console.error("🔴 ERROR AL ACTUALIZAR VETERINARIO:", error);
+        res.status(500).json({ error: 'Error interno al actualizar el veterinario' });
     }
 };

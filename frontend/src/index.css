@@ -2,7 +2,123 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Un fondo base temporal para ver que funciona */
+/* ══════════════════════════════════════════════════
+   🌿 IDENTIDAD VISUAL PETOVIX
+   ══════════════════════════════════════════════════ */
+
 body {
     background-color: #f0fdf4; /* Verde muy suave */
+}
+
+/* 🫧 Manchas flotantes del fondo (usadas por <FondoPetovix>) */
+.blob-petovix {
+    position: absolute;
+    width: 22rem;
+    height: 22rem;
+    border-radius: 9999px;
+    filter: blur(64px);
+    will-change: transform;
+}
+
+.blob-1 {
+    top: -6rem;
+    left: -6rem;
+    animation: flotar-1 18s ease-in-out infinite;
+}
+
+.blob-2 {
+    top: 30%;
+    right: -8rem;
+    animation: flotar-2 22s ease-in-out infinite;
+}
+
+.blob-3 {
+    bottom: -8rem;
+    left: 30%;
+    animation: flotar-3 26s ease-in-out infinite;
+}
+
+@keyframes flotar-1 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50%      { transform: translate(3rem, 2rem) scale(1.1); }
+}
+
+@keyframes flotar-2 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50%      { transform: translate(-3rem, -2rem) scale(1.15); }
+}
+
+@keyframes flotar-3 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50%      { transform: translate(2rem, -3rem) scale(1.05); }
+}
+
+/* ✨ Aparición suave de tarjetas al cargar una pantalla */
+.aparecer {
+    animation: aparecer 0.5s ease-out both;
+}
+
+@keyframes aparecer {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ♿ Respetar a usuarios que prefieren menos movimiento */
+@media (prefers-reduced-motion: reduce) {
+    .blob-petovix, .aparecer {
+        animation: none;
+    }
+}
+
+/* ══════════════════════════════════════════════════
+   🧩 CLASES REUTILIZABLES (usar en cualquier pantalla)
+   ══════════════════════════════════════════════════ */
+
+@layer components {
+    /* Tarjeta glassmorphism estándar de PETOVIX */
+    .tarjeta-petovix {
+        @apply bg-white/70 backdrop-blur-md border border-white/60 rounded-3xl
+               shadow-lg shadow-teal-900/5 transition-all duration-300
+               hover:shadow-2xl hover:shadow-emerald-900/10;
+    }
+
+    /* Tarjeta que "levita" al pasar el mouse */
+    .tarjeta-petovix-hover {
+        @apply hover:-translate-y-2;
+    }
+
+    /* Botón principal (degradado verde→teal) */
+    .boton-petovix {
+        @apply px-6 py-3 rounded-full font-bold text-white
+               bg-gradient-to-r from-emerald-500 to-teal-600 shadow-md
+               transition-transform duration-200 hover:scale-105
+               focus:outline-none focus:ring-4 focus:ring-emerald-300/50
+               disabled:opacity-50 disabled:hover:scale-100;
+    }
+
+    /* Botón secundario (blanco con borde teal) */
+    .boton-petovix-secundario {
+        @apply px-6 py-3 rounded-full font-bold text-teal-700 bg-white
+               border border-teal-200 shadow-sm transition-all duration-200
+               hover:bg-teal-50 hover:shadow-md
+               focus:outline-none focus:ring-4 focus:ring-teal-200/50;
+    }
+
+    /* Título de sección con degradado en una palabra clave */
+    .titulo-degradado {
+        @apply text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-teal-500;
+    }
+
+    /* Badge/etiqueta estilo PETOVIX */
+    .badge-petovix {
+        @apply inline-block px-4 py-1.5 rounded-full bg-emerald-100 text-emerald-700
+               text-sm font-semibold tracking-wide;
+    }
+
+    /* Input estándar */
+    .input-petovix {
+        @apply w-full bg-white/80 border border-teal-100 rounded-xl px-4 py-2.5
+               outline-none transition
+               focus:border-teal-500 focus:ring-2 focus:ring-teal-200;
+    }
 }

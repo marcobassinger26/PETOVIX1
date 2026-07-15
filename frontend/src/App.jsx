@@ -65,10 +65,14 @@ function App() {
         {/* 🌟 Ruta Pública */}
         <Route path="/nuestro-equipo" element={<NuestroEquipo />} />
 
+
+        
+
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </BrowserRouter>
   );
 }
+
 
 export default App;

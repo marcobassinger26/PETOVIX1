@@ -11,6 +11,8 @@ const authRoutes = require('./src/routes/authRoutes');
 const uploadRoutes = require('./src/routes/uploadRoutes');
 require('dotenv').config();
 
+
+
 const animalRoutes = require('./src/routes/animalRoutes');
 const citaRoutes = require('./src/routes/citaRoutes');
 
@@ -78,3 +80,4 @@ app.listen(PORT, () => {
         console.error('⚠️  ADVERTENCIA: JWT_SECRET no está definido en .env — la API no funcionará correctamente.');
     }
 });
+

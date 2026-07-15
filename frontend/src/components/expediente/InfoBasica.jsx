@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 
 export default function InfoBasica({ animal, esVeterinario, onActualizar }) {
   const [editando, setEditando] = useState(false);
-  
+
   // 1. Inicializamos el estado vacío para evitar errores de renderizado
   const [formData, setFormData] = useState({
     estado: '',
@@ -43,52 +43,52 @@ export default function InfoBasica({ animal, esVeterinario, onActualizar }) {
 
   const edadCalculada = calcularEdad(animal?.fecha_nacimiento);
 
-  if (!animal) return <p className="text-gray-400 italic">Cargando información...</p>;
+  if (!animal) return <p className="text-teal-800/50 italic">Cargando información...</p>;
 
   return (
-    <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm mb-6">
-      <div className="flex justify-between items-center mb-4 border-b pb-2">
-        <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-           Información Básica
+    <div className="bg-white/70 backdrop-blur-sm p-6 rounded-2xl border border-teal-50 shadow-sm mb-6">
+      <div className="flex justify-between items-center mb-4 border-b border-teal-100 pb-2">
+        <h3 className="text-xl font-bold text-teal-900 flex items-center gap-2">
+          Información Básica
         </h3>
         {esVeterinario && !editando && (
-          <button 
-            onClick={() => setEditando(true)} 
-            className="text-sm text-green-700 font-bold hover:bg-green-50 px-3 py-1 rounded-lg transition"
+          <button
+            onClick={() => setEditando(true)}
+            className="text-sm text-teal-700 font-bold hover:bg-teal-50 px-3 py-1 rounded-full transition"
           >
-             Editar
+            ✏️ Editar
           </button>
         )}
       </div>
 
-      <ul className="space-y-4 text-gray-600">
+      <ul className="space-y-4 text-teal-800/80">
         <li className="flex items-center gap-2">
-          <span className="font-bold min-w-[120px]">Especie:</span>
-          <span className="bg-gray-100 px-2 py-1 rounded text-sm uppercase">{animal.especie}</span>
+          <span className="font-bold min-w-[120px] text-teal-900">Especie:</span>
+          <span className="bg-teal-50 text-teal-800 px-2 py-1 rounded-full text-sm uppercase font-semibold">{animal.especie}</span>
         </li>
         <li className="flex items-center gap-2">
-          <span className="font-bold min-w-[120px]">Raza:</span>
+          <span className="font-bold min-w-[120px] text-teal-900">Raza:</span>
           <span>{animal.raza || 'No especificada'}</span>
         </li>
         <li className="flex items-center gap-2">
-          <span className="font-bold min-w-[120px]">Fecha Nac:</span>
+          <span className="font-bold min-w-[120px] text-teal-900">Fecha Nac:</span>
           <span>{animal.fecha_nacimiento || 'No registrada'}</span>
         </li>
         {edadCalculada && (
           <li className="flex items-center gap-2">
-            <span className="font-bold min-w-[120px]">Edad:</span>
-            <span className="bg-blue-50 text-blue-700 px-2 py-1 rounded text-sm font-semibold">
+            <span className="font-bold min-w-[120px] text-teal-900">Edad:</span>
+            <span className="bg-emerald-50 text-emerald-700 px-2 py-1 rounded-full text-sm font-semibold">
               🎂 {edadCalculada}
             </span>
           </li>
         )}
-        <li className="flex items-center gap-2 border-t pt-3">
-          <span className="font-bold min-w-[120px]">Estado Actual:</span>
+        <li className="flex items-center gap-2 border-t border-teal-50 pt-3">
+          <span className="font-bold min-w-[120px] text-teal-900">Estado Actual:</span>
           {editando ? (
-            <select 
-              value={formData.estado} 
+            <select
+              value={formData.estado}
               onChange={(e) => setFormData({...formData, estado: e.target.value})}
-              className="border-2 border-green-200 rounded-lg px-2 py-1 text-sm focus:border-green-500 outline-none"
+              className="input-petovix !w-auto text-sm"
             >
               <option value="Disponible">🟢 Disponible</option>
               <option value="En tratamiento">🟡 En tratamiento</option>
@@ -96,7 +96,7 @@ export default function InfoBasica({ animal, esVeterinario, onActualizar }) {
               <option value="Adoptado">🏠 Adoptado</option>
             </select>
           ) : (
-            <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-bold uppercase shadow-sm">
+            <span className="bg-gradient-to-r from-emerald-100 to-teal-100 text-teal-800 px-3 py-1 rounded-full text-xs font-bold uppercase shadow-sm">
               {animal.estado}
             </span>
           )}
@@ -104,13 +104,13 @@ export default function InfoBasica({ animal, esVeterinario, onActualizar }) {
       </ul>
 
       {/* Sección de Alertas Médicas */}
-      <div className="mt-6 bg-red-50 border-l-4 border-red-500 p-4 rounded-xl shadow-sm">
+      <div className="mt-6 bg-red-50/80 border-l-4 border-red-400 p-4 rounded-2xl shadow-sm">
         <h4 className="text-red-700 font-bold flex items-center gap-2 mb-1">
-           Alertas Médicas
+          ⚠️ Alertas Médicas
         </h4>
         {editando ? (
-          <textarea 
-            className="w-full mt-2 p-3 text-sm border-2 border-red-200 rounded-xl focus:outline-none focus:border-red-500 transition-all"
+          <textarea
+            className="w-full mt-2 p-3 text-sm bg-white/80 border-2 border-red-200 rounded-xl focus:outline-none focus:border-red-400 focus:ring-2 focus:ring-red-100 transition-all resize-none"
             rows="3"
             value={formData.alergias}
             onChange={(e) => setFormData({...formData, alergias: e.target.value})}
@@ -125,19 +125,19 @@ export default function InfoBasica({ animal, esVeterinario, onActualizar }) {
 
       {/* Botones de Guardado (Solo visibles en modo edición) */}
       {editando && (
-        <div className="flex gap-3 mt-6 animate-pulse-in">
-          <button 
-            onClick={handleGuardar} 
-            className="flex-1 bg-green-700 text-white py-3 rounded-xl font-bold text-sm hover:bg-green-800 shadow-lg transition-all"
+        <div className="flex gap-3 mt-6 aparecer">
+          <button
+            onClick={handleGuardar}
+            className="boton-petovix flex-1 text-sm"
           >
             💾 Guardar Cambios
           </button>
-          <button 
+          <button
             onClick={() => {
                 setEditando(false);
                 setFormData({ estado: animal.estado, alergias: animal.alergias || '' });
-            }} 
-            className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-xl font-bold text-sm hover:bg-gray-300 transition-all"
+            }}
+            className="boton-petovix-secundario flex-1 text-sm"
           >
             Cancelar
           </button>

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { animalesService } from '../../services/animalesService';
 import Navbar from '../common/Navbar';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import FondoPetovix from '../common/FondoPetovix';
 
 // Configuración de especies con sus animaciones Lottie
 const ESPECIES = [
@@ -41,8 +42,8 @@ function EspecieCard({ especie, seleccionada, onClick }) {
       className={`
         flex flex-col items-center justify-center p-3 rounded-2xl border-2 transition-all duration-200 cursor-pointer
         ${seleccionada
-          ? 'border-green-500 bg-green-50 shadow-md scale-105'
-          : 'border-gray-200 bg-white hover:border-green-300 hover:shadow-sm'
+          ? 'border-emerald-400 bg-emerald-50/80 shadow-md shadow-emerald-900/10 scale-105'
+          : 'border-teal-100 bg-white/70 hover:border-emerald-300 hover:shadow-sm'
         }
       `}
     >
@@ -54,11 +55,11 @@ function EspecieCard({ especie, seleccionada, onClick }) {
           dotLottieRefCallback={(instance) => setLottieRef(instance)}
         />
       </div>
-      <span className={`text-xs font-bold mt-1 ${seleccionada ? 'text-green-700' : 'text-gray-500'}`}>
+      <span className={`text-xs font-bold mt-1 ${seleccionada ? 'text-emerald-700' : 'text-teal-800/60'}`}>
         {especie.label}
       </span>
       {seleccionada && (
-        <span className="mt-1 w-2 h-2 rounded-full bg-green-500 inline-block" />
+        <span className="mt-1 w-2 h-2 rounded-full bg-emerald-500 inline-block" />
       )}
     </button>
   );
@@ -107,7 +108,7 @@ export default function AgregarMascota() {
   };
 
   return (
-    <div className="min-h-screen bg-green-50">
+    <FondoPetovix>
       <Navbar />
 
       <div className="container mx-auto p-4 md:p-8 max-w-3xl">
@@ -115,36 +116,40 @@ export default function AgregarMascota() {
         {/* Botón Volver */}
         <button
           onClick={() => navigate(-1)}
-          className="mb-6 bg-white border border-green-200 text-green-800 font-bold py-2 px-4 rounded-full shadow-sm hover:bg-green-50 hover:shadow-md transition-all flex items-center gap-2 group w-fit"
+          className="boton-petovix-secundario aparecer mb-6 !py-2 !px-4 text-sm flex items-center gap-2 group w-fit"
         >
           <span className="transform group-hover:-translate-x-1 transition-transform">←</span>
           Volver
         </button>
 
-        <div className="bg-white rounded-3xl shadow-xl overflow-hidden relative">
+        <div className="tarjeta-petovix aparecer overflow-hidden relative">
 
           {/* OVERLAY DE ÉXITO */}
           {exito && (
-            <div className="absolute inset-0 bg-white/90 backdrop-blur-sm z-50 flex flex-col items-center justify-center p-6 text-center">
-              <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mb-6 shadow-inner">
+            <div className="absolute inset-0 bg-white/90 backdrop-blur-sm z-50 flex flex-col items-center justify-center p-6 text-center aparecer">
+              <div className="w-24 h-24 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-full flex items-center justify-center mb-6 shadow-inner">
                 <span className="text-5xl">🐾</span>
               </div>
-              <h3 className="text-4xl font-bold text-green-800 mb-2">¡Éxito!</h3>
-              <p className="text-xl text-gray-600 font-medium">Paciente registrado correctamente.</p>
-              <p className="text-sm text-gray-400 mt-4 animate-pulse">Abriendo expediente clínico...</p>
+              <h3 className="text-4xl font-bold titulo-degradado mb-2">¡Éxito!</h3>
+              <p className="text-xl text-teal-900 font-medium">Paciente registrado correctamente.</p>
+              <p className="text-sm text-teal-800/50 mt-4 animate-pulse">Abriendo expediente clínico...</p>
             </div>
           )}
 
           {/* Encabezado */}
-          <div className="bg-green-800 p-6 text-white text-center">
-            <h2 className="text-3xl font-bold"> Registrar Nuevo Paciente</h2>
-            <p className="opacity-80 mt-1">Ingresa los datos del nuevo animal al sistema.</p>
+          <div className="relative bg-gradient-to-r from-emerald-500 to-teal-600 p-6 text-white text-center overflow-hidden">
+            <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+              <div className="absolute -top-10 -right-10 w-44 h-44 bg-white/10 rounded-full blur-2xl" />
+              <div className="absolute -bottom-14 -left-8 w-52 h-52 bg-teal-300/20 rounded-full blur-3xl" />
+            </div>
+            <h2 className="relative z-10 text-3xl font-bold">🐾 Registrar Nuevo Paciente</h2>
+            <p className="relative z-10 opacity-90 mt-1">Ingresa los datos del nuevo animal al sistema.</p>
           </div>
 
           <form onSubmit={handleSubmit} className="p-8 space-y-6">
 
             {error && (
-              <div className="bg-red-50 text-red-700 p-3 rounded-lg border border-red-200 text-sm">
+              <div className="bg-red-50 text-red-700 p-3 rounded-xl border border-red-200 text-sm aparecer">
                 ⚠️ {error}
               </div>
             )}
@@ -153,17 +158,17 @@ export default function AgregarMascota() {
 
               {/* Nombre */}
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1">Nombre *</label>
+                <label className="block text-sm font-bold text-teal-900 mb-1">Nombre *</label>
                 <input type="text" name="nombre" required value={formData.nombre} onChange={handleChange}
-                  className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500"
+                  className="input-petovix !p-3"
                   placeholder="Ej: Max" />
               </div>
 
               {/* Microchip */}
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1">Microchip / Código *</label>
+                <label className="block text-sm font-bold text-teal-900 mb-1">Microchip / Código *</label>
                 <input type="text" name="numero_microchip" required value={formData.numero_microchip} onChange={handleChange}
-                  className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:border-green-500 font-mono"
+                  className="input-petovix !p-3 font-mono"
                   placeholder="Ej: MC-9988..." />
               </div>
 
@@ -171,7 +176,7 @@ export default function AgregarMascota() {
 
             {/* SELECTOR DE ESPECIE CON LOTTIE */}
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-3">Especie</label>
+              <label className="block text-sm font-bold text-teal-900 mb-3">Especie</label>
               <div className="grid grid-cols-4 gap-3">
                 {ESPECIES.map((especie) => (
                   <EspecieCard
@@ -188,17 +193,17 @@ export default function AgregarMascota() {
 
               {/* Raza */}
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1">Raza</label>
+                <label className="block text-sm font-bold text-teal-900 mb-1">Raza</label>
                 <input type="text" name="raza" value={formData.raza} onChange={handleChange}
-                  className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:border-green-500"
+                  className="input-petovix !p-3"
                   placeholder="Ej: Labrador" />
               </div>
 
               {/* Sexo */}
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1">Sexo</label>
+                <label className="block text-sm font-bold text-teal-900 mb-1">Sexo</label>
                 <select name="sexo" value={formData.sexo} onChange={handleChange}
-                  className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:border-green-500">
+                  className="input-petovix !p-3">
                   <option value="Macho">Macho</option>
                   <option value="Hembra">Hembra</option>
                 </select>
@@ -206,30 +211,30 @@ export default function AgregarMascota() {
 
               {/* Fecha Nacimiento */}
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1">Fecha de Nacimiento</label>
+                <label className="block text-sm font-bold text-teal-900 mb-1">Fecha de Nacimiento</label>
                 <input type="date" name="fecha_nacimiento" value={formData.fecha_nacimiento} onChange={handleChange}
-                  className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:border-green-500" />
+                  className="input-petovix !p-3" />
               </div>
 
             </div>
 
             {/* Alergias */}
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1">Alertas Médicas / Alergias (Opcional)</label>
+              <label className="block text-sm font-bold text-teal-900 mb-1">Alertas Médicas / Alergias (Opcional)</label>
               <textarea name="alergias" value={formData.alergias} onChange={handleChange} rows="2"
-                className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500"
+                className="w-full bg-white/80 border border-red-100 rounded-xl p-3 outline-none transition focus:border-red-400 focus:ring-2 focus:ring-red-100 resize-none placeholder:text-teal-800/40"
                 placeholder="Alergias a medicamentos, condiciones previas..."></textarea>
             </div>
 
             {/* Botón Guardar */}
             <button type="submit" disabled={loading || exito}
-              className="w-full bg-green-700 text-white font-bold py-4 rounded-xl shadow-lg hover:bg-green-800 transition-colors disabled:opacity-50">
+              className="boton-petovix w-full !py-4">
               {loading && !exito ? 'Guardando Paciente...' : '➕ Registrar Paciente'}
             </button>
 
           </form>
         </div>
       </div>
-    </div>
+    </FondoPetovix>
   );
 }

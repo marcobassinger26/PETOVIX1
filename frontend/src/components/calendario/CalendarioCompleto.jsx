@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 import Navbar from '../common/Navbar';
 import Footer from '../common/Footer';
+import FondoPetovix from '../common/FondoPetovix';
 
 // ─────────────────────────────────────────────
 // HELPERS
@@ -24,9 +25,9 @@ function formatearFecha(anio, mes, dia) {
 }
 
 const COLOR_ESTADO = {
-  Pendiente:  { bg: 'bg-blue-100',   text: 'text-blue-700',   dot: 'bg-blue-500',   borde: 'border-blue-400' },
-  Completada: { bg: 'bg-green-100',  text: 'text-green-700',  dot: 'bg-green-500',  borde: 'border-green-400' },
-  Cancelada:  { bg: 'bg-red-100',    text: 'text-red-600',    dot: 'bg-red-400',    borde: 'border-red-300' },
+  Pendiente:  { bg: 'bg-teal-100',    text: 'text-teal-700',    dot: 'bg-teal-500',    borde: 'border-teal-400' },
+  Completada: { bg: 'bg-emerald-100', text: 'text-emerald-700', dot: 'bg-emerald-500', borde: 'border-emerald-400' },
+  Cancelada:  { bg: 'bg-red-100',     text: 'text-red-600',     dot: 'bg-red-400',     borde: 'border-red-300' },
 };
 
 // ─────────────────────────────────────────────
@@ -38,46 +39,46 @@ function ModalDetalleCita({ cita, onCerrar, onCancelar, onCompletar }) {
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden">
-        <div className="bg-green-700 p-4 text-white flex justify-between items-center">
+      <div className="bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden aparecer">
+        <div className="bg-gradient-to-r from-emerald-500 to-teal-600 p-4 text-white flex justify-between items-center">
           <h3 className="font-bold text-lg">Detalle de Cita</h3>
-          <button onClick={onCerrar} className="text-2xl leading-none hover:text-gray-200">✕</button>
+          <button onClick={onCerrar} className="text-2xl leading-none hover:text-teal-100 transition-colors">✕</button>
         </div>
         <div className="p-6 space-y-4">
           <div className="flex items-center gap-3">
-            <div className="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center text-2xl">
+            <div className="bg-gradient-to-br from-emerald-100 to-teal-100 w-12 h-12 rounded-full flex items-center justify-center text-2xl">
               🐾
             </div>
             <div>
-              <p className="font-bold text-gray-800 text-lg">{cita.Animal?.nombre}</p>
-              <p className="text-xs text-gray-500">{cita.Animal?.especie} · {cita.Animal?.raza}</p>
+              <p className="font-bold text-teal-900 text-lg">{cita.Animal?.nombre}</p>
+              <p className="text-xs text-teal-800/60">{cita.Animal?.especie} · {cita.Animal?.raza}</p>
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3 text-sm">
-            <div className="bg-gray-50 rounded-lg p-3">
-              <p className="text-xs text-gray-400 mb-1">Fecha</p>
-              <p className="font-bold text-gray-700">
+            <div className="bg-teal-50/70 rounded-xl p-3">
+              <p className="text-xs text-teal-700/60 mb-1">Fecha</p>
+              <p className="font-bold text-teal-900">
                 {new Date(cita.fecha + 'T00:00:00').toLocaleDateString('es-MX', {
                   weekday: 'long', day: 'numeric', month: 'long'
                 })}
               </p>
             </div>
-            <div className="bg-gray-50 rounded-lg p-3">
-              <p className="text-xs text-gray-400 mb-1">Hora</p>
-              <p className="font-bold text-gray-700">{cita.hora?.slice(0, 5)}</p>
+            <div className="bg-teal-50/70 rounded-xl p-3">
+              <p className="text-xs text-teal-700/60 mb-1">Hora</p>
+              <p className="font-bold text-teal-900">{cita.hora?.slice(0, 5)}</p>
             </div>
           </div>
 
-          <div className="bg-gray-50 rounded-lg p-3 text-sm">
-            <p className="text-xs text-gray-400 mb-1">Motivo</p>
-            <p className="font-bold text-gray-700">{cita.motivo}</p>
+          <div className="bg-teal-50/70 rounded-xl p-3 text-sm">
+            <p className="text-xs text-teal-700/60 mb-1">Motivo</p>
+            <p className="font-bold text-teal-900">{cita.motivo}</p>
           </div>
 
           {cita.notas && (
-            <div className="bg-yellow-50 rounded-lg p-3 text-sm border border-yellow-100">
-              <p className="text-xs text-yellow-600 mb-1">📝 Notas</p>
-              <p className="text-gray-600">{cita.notas}</p>
+            <div className="bg-amber-50 rounded-xl p-3 text-sm border border-amber-100">
+              <p className="text-xs text-amber-600 mb-1">📝 Notas</p>
+              <p className="text-teal-800/80">{cita.notas}</p>
             </div>
           )}
 
@@ -91,13 +92,13 @@ function ModalDetalleCita({ cita, onCerrar, onCancelar, onCompletar }) {
             <div className="flex gap-2 pt-2">
               <button
                 onClick={() => onCancelar(cita.id_cita)}
-                className="flex-1 bg-red-50 text-red-600 border border-red-200 py-2.5 rounded-xl font-bold hover:bg-red-100 transition text-sm"
+                className="flex-1 bg-red-50 text-red-600 border border-red-200 py-2.5 rounded-full font-bold hover:bg-red-100 transition text-sm"
               >
                 Cancelar cita
               </button>
               <button
                 onClick={() => onCompletar(cita.id_cita)}
-                className="flex-1 bg-green-700 text-white py-2.5 rounded-xl font-bold hover:bg-green-800 transition text-sm"
+                className="boton-petovix flex-1 !py-2.5 text-sm"
               >
                 ✅ Completar
               </button>
@@ -196,41 +197,44 @@ export default function CalendarioCompleto() {
   const hoyStr = hoy.toISOString().split('T')[0];
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50">
+    <FondoPetovix>
+      <div className="min-h-screen flex flex-col">
       <Navbar />
 
       <main className="flex-grow container mx-auto px-4 py-8 max-w-7xl">
 
         {/* ENCABEZADO */}
-        <div className="flex items-center gap-4 mb-8">
+        <div className="flex items-center gap-4 mb-8 aparecer">
           <button
             onClick={() => navigate(-1)}
-            className="bg-white border border-green-200 text-green-800 font-bold py-2 px-4 rounded-full shadow-sm hover:bg-green-50 transition-all flex items-center gap-2 group w-fit"
+            className="boton-petovix-secundario !py-2 !px-4 text-sm flex items-center gap-2 group w-fit"
           >
             <span className="transform group-hover:-translate-x-1 transition-transform">←</span>
             Volver
           </button>
           <div>
-            <h1 className="text-2xl font-extrabold text-green-900">Calendario de Citas</h1>
-            <p className="text-sm text-gray-500">Vista completa de tu agenda clínica</p>
+            <h1 className="text-2xl md:text-3xl font-extrabold text-teal-900">
+              Calendario de <span className="titulo-degradado">Citas</span>
+            </h1>
+            <p className="text-sm text-teal-800/60">Vista completa de tu agenda clínica</p>
           </div>
         </div>
 
         {/* ESTADÍSTICAS DEL MES */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 text-center">
-            <p className="text-3xl font-bold text-gray-800">{citasDelMes.length}</p>
-            <p className="text-xs text-gray-500 mt-1">Total del mes</p>
+          <div className="tarjeta-petovix aparecer p-4 text-center">
+            <p className="text-3xl font-bold text-teal-900">{citasDelMes.length}</p>
+            <p className="text-xs text-teal-800/60 mt-1">Total del mes</p>
           </div>
-          <div className="bg-blue-50 rounded-2xl p-4 shadow-sm border border-blue-100 text-center">
-            <p className="text-3xl font-bold text-blue-700">{pendientesMes}</p>
-            <p className="text-xs text-blue-500 mt-1">Pendientes</p>
+          <div className="tarjeta-petovix aparecer p-4 text-center !bg-teal-50/80" style={{ animationDelay: '60ms' }}>
+            <p className="text-3xl font-bold text-teal-700">{pendientesMes}</p>
+            <p className="text-xs text-teal-600 mt-1">Pendientes</p>
           </div>
-          <div className="bg-green-50 rounded-2xl p-4 shadow-sm border border-green-100 text-center">
-            <p className="text-3xl font-bold text-green-700">{completadasMes}</p>
-            <p className="text-xs text-green-500 mt-1">Completadas</p>
+          <div className="tarjeta-petovix aparecer p-4 text-center !bg-emerald-50/80" style={{ animationDelay: '120ms' }}>
+            <p className="text-3xl font-bold text-emerald-700">{completadasMes}</p>
+            <p className="text-xs text-emerald-600 mt-1">Completadas</p>
           </div>
-          <div className="bg-red-50 rounded-2xl p-4 shadow-sm border border-red-100 text-center">
+          <div className="tarjeta-petovix aparecer p-4 text-center !bg-red-50/80" style={{ animationDelay: '180ms' }}>
             <p className="text-3xl font-bold text-red-600">{canceladasMes}</p>
             <p className="text-xs text-red-400 mt-1">Canceladas</p>
           </div>
@@ -240,30 +244,30 @@ export default function CalendarioCompleto() {
 
           {/* COLUMNA IZQUIERDA: CALENDARIO */}
           <div className="lg:col-span-2">
-            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="tarjeta-petovix aparecer overflow-hidden" style={{ animationDelay: '150ms' }}>
 
               {/* HEADER DEL CALENDARIO */}
-              <div className="bg-green-700 text-white px-6 py-4 flex items-center justify-between">
+              <div className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-6 py-4 flex items-center justify-between">
                 <button onClick={mesAnterior}
-                  className="w-9 h-9 rounded-full bg-green-600 hover:bg-green-500 flex items-center justify-center font-bold transition"
+                  className="w-9 h-9 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center font-bold transition"
                 >‹</button>
                 <h2 className="text-xl font-bold">
                   {MESES[mes]} {anio}
                 </h2>
                 <button onClick={mesSiguiente}
-                  className="w-9 h-9 rounded-full bg-green-600 hover:bg-green-500 flex items-center justify-center font-bold transition"
+                  className="w-9 h-9 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center font-bold transition"
                 >›</button>
               </div>
 
               {/* FILTRO */}
-              <div className="px-6 py-3 border-b border-gray-100 flex gap-2 flex-wrap">
+              <div className="px-6 py-3 border-b border-teal-100 flex gap-2 flex-wrap">
                 {['Todos', 'Pendiente', 'Completada', 'Cancelada'].map(estado => (
                   <button key={estado}
                     onClick={() => setFiltroEstado(estado)}
                     className={`text-xs px-3 py-1.5 rounded-full font-bold transition ${
                       filtroEstado === estado
-                        ? 'bg-green-700 text-white'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-sm'
+                        : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
                     }`}
                   >
                     {estado}
@@ -272,9 +276,9 @@ export default function CalendarioCompleto() {
               </div>
 
               {/* DÍAS DE LA SEMANA */}
-              <div className="grid grid-cols-7 border-b border-gray-100">
+              <div className="grid grid-cols-7 border-b border-teal-100">
                 {DIAS_SEMANA.map(d => (
-                  <div key={d} className="py-3 text-center text-xs font-bold text-gray-400 uppercase">
+                  <div key={d} className="py-3 text-center text-xs font-bold text-teal-700/50 uppercase">
                     {d}
                   </div>
                 ))}
@@ -284,13 +288,13 @@ export default function CalendarioCompleto() {
               {loading ? (
                 <div className="py-20 text-center">
                   <p className="text-3xl animate-bounce">🐾</p>
-                  <p className="text-sm text-gray-400 mt-2">Cargando citas...</p>
+                  <p className="text-sm text-teal-800/50 mt-2">Cargando citas...</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-7">
                   {/* Celdas vacías del inicio */}
                   {Array.from({ length: primerDia }).map((_, i) => (
-                    <div key={`empty-${i}`} className="h-20 border-b border-r border-gray-50" />
+                    <div key={`empty-${i}`} className="h-20 border-b border-r border-teal-50" />
                   ))}
 
                   {/* Días del mes */}
@@ -304,17 +308,17 @@ export default function CalendarioCompleto() {
                       <div
                         key={dia}
                         onClick={() => setDiaSeleccionado(esSelec ? null : dia)}
-                        className={`h-20 border-b border-r border-gray-50 p-1.5 cursor-pointer transition-all hover:bg-green-50 ${
-                          esSelec ? 'bg-green-50 ring-2 ring-inset ring-green-400' : ''
+                        className={`h-20 border-b border-r border-teal-50 p-1.5 cursor-pointer transition-all hover:bg-emerald-50/60 ${
+                          esSelec ? 'bg-emerald-50/80 ring-2 ring-inset ring-emerald-400' : ''
                         }`}
                       >
                         <div className={`w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold mb-1 ${
-                          esHoy ? 'bg-green-700 text-white' : 'text-gray-700'
+                          esHoy ? 'bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-sm' : 'text-teal-900'
                         }`}>
                           {dia}
                         </div>
 
-                        {/* Puntos de citas (máx 3 visibles) */}
+                        {/* Puntos de citas (máx 2 visibles) */}
                         <div className="space-y-0.5">
                           {citasDia.slice(0, 2).map((cita, idx) => {
                             const c = COLOR_ESTADO[cita.estado] || COLOR_ESTADO.Pendiente;
@@ -327,7 +331,7 @@ export default function CalendarioCompleto() {
                             );
                           })}
                           {citasDia.length > 2 && (
-                            <p className="text-[10px] text-gray-400 pl-1">+{citasDia.length - 2} más</p>
+                            <p className="text-[10px] text-teal-700/50 pl-1">+{citasDia.length - 2} más</p>
                           )}
                         </div>
                       </div>
@@ -340,15 +344,15 @@ export default function CalendarioCompleto() {
 
           {/* COLUMNA DERECHA: PANEL DEL DÍA */}
           <div className="flex flex-col gap-6">
-            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 flex flex-col overflow-hidden flex-grow">
-              <div className="bg-green-50 px-5 py-4 border-b border-green-100">
-                <h3 className="font-bold text-green-900">
+            <div className="tarjeta-petovix aparecer flex flex-col overflow-hidden flex-grow" style={{ animationDelay: '220ms' }}>
+              <div className="bg-gradient-to-r from-teal-50 to-emerald-50 px-5 py-4 border-b border-teal-100">
+                <h3 className="font-bold text-teal-900">
                   {diaSeleccionado
                     ? `📋 ${diaSeleccionado} de ${MESES[mes]}`
                     : `📋 Hoy — ${hoy.getDate()} de ${MESES[hoy.getMonth()]}`
                   }
                 </h3>
-                <p className="text-xs text-gray-400 mt-0.5">
+                <p className="text-xs text-teal-800/50 mt-0.5">
                   {citasDelDia.length} cita{citasDelDia.length !== 1 ? 's' : ''}
                 </p>
               </div>
@@ -357,7 +361,7 @@ export default function CalendarioCompleto() {
                 {citasDelDia.length === 0 ? (
                   <div className="text-center py-12">
                     <p className="text-4xl mb-3">📭</p>
-                    <p className="text-sm font-bold text-gray-500">Sin citas este día</p>
+                    <p className="text-sm font-bold text-teal-800/60">Sin citas este día</p>
                   </div>
                 ) : (
                   citasDelDia.map(cita => {
@@ -366,22 +370,22 @@ export default function CalendarioCompleto() {
                       <div
                         key={cita.id_cita}
                         onClick={() => setCitaSeleccionada(cita)}
-                        className={`p-3 rounded-xl border-l-4 ${c.borde} bg-gray-50 hover:bg-gray-100 cursor-pointer transition-all`}
+                        className={`p-3 rounded-xl border-l-4 ${c.borde} bg-white/70 hover:bg-teal-50/70 cursor-pointer transition-all border border-teal-50 hover:shadow-sm`}
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
                             <span className={`w-2 h-2 rounded-full ${c.dot}`} />
-                            <p className="text-sm font-bold text-gray-800">{cita.hora?.slice(0, 5)}</p>
+                            <p className="text-sm font-bold text-teal-900">{cita.hora?.slice(0, 5)}</p>
                           </div>
                           <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${c.bg} ${c.text}`}>
                             {cita.estado}
                           </span>
                         </div>
-                        <p className="text-sm font-bold text-gray-700 mt-1 truncate">
+                        <p className="text-sm font-bold text-teal-900 mt-1 truncate">
                           {cita.Animal?.nombre}
-                          <span className="font-normal text-gray-400 text-xs"> · {cita.Animal?.especie}</span>
+                          <span className="font-normal text-teal-800/50 text-xs"> · {cita.Animal?.especie}</span>
                         </p>
-                        <p className="text-xs text-gray-500 truncate">{cita.motivo}</p>
+                        <p className="text-xs text-teal-800/60 truncate">{cita.motivo}</p>
                       </div>
                     );
                   })
@@ -403,6 +407,7 @@ export default function CalendarioCompleto() {
           onCompletar={handleCompletar}
         />
       )}
-    </div>
+      </div>
+    </FondoPetovix>
   );
 }
