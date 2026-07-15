@@ -8,14 +8,14 @@ export default function Footer() {
         {/* Contacto */}
         <div>
           <h3 className="text-xl font-bold text-white mb-4">Contacto</h3>
-          <p className="mb-2">📞 Tel: (555) 123-4567</p>
-          <p className="mb-2">📧 Correo: hola@korium.com</p>
-          <p>📍 Ubicación: Av. Veterinaria 123, Ciudad.</p>
+          <p className="mb-2">Tel: (555) 123-4567</p>
+          <p className="mb-2"> Correo: hola@korium.com</p>
+          <p>Ubicación: Av. Veterinaria 123, Ciudad.</p>
         </div>
 
         {/* Redes Sociales */}
         <div className="flex flex-col items-center">
-          <h3 className="text-xl font-bold text-white mb-4">Síguenos</h3>
+          <h3 className="text-xl font-bold text-white mb-4">síguenos</h3>
           {/* Los íconos heredarán el tamaño text-2xl y el color actual */}
           <div className="flex gap-5 text-2xl">
             <a href="#" aria-label="Instagram" className="hover:text-white transition transform hover:scale-110">
@@ -35,8 +35,8 @@ export default function Footer() {
 
         {/* Logo y Copyright */}
         <div className="flex flex-col items-center md:items-end justify-center">
-          <img src="/logo-korium.png" alt="Korium" className="h-16 mb-2 brightness-0 invert opacity-80" />
-          <p className="text-sm opacity-70">© 2026 KORIUM. Todos los derechos reservados.</p>
+          <img src="/logo-petovix.png" alt="Petovix" className="h-16 mb-2 brightness-0 invert opacity-80" />
+          <p className="text-sm opacity-70">© 2026 Petovix. Todos los derechos reservados.</p>
         </div>
 
       </div>

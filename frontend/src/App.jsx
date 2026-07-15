@@ -9,9 +9,11 @@ import AgregarMascota from './components/dashboard/AgregarMascota';
 import Perfil from './components/perfil/Perfil';
 import PanelAdmin from './components/Admi/PanelAdmin';
 import CalendarioCompleto from './components/calendario/CalendarioCompleto';
+import MisCitasTutor from './components/citas/MisCitasTutor';
+import NuestroEquipo from './components/publico/NuestroEquipo';
 
 function App() {
-  const { isAuthenticated, loading, esAdministrador, esVeterinario } = useAuth();
+  const { isAuthenticated, loading, esAdministrador, esVeterinario, esTutor } = useAuth();
 
   if (loading) {
     return (
@@ -25,43 +27,43 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
-        
-        <Route 
-          path="/login" 
-          element={isAuthenticated ? <Navigate to="/" /> : <LoginScreen />} 
-        />
-        
-        <Route 
-          path="/dashboard" 
-          element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />} 
-        />
-        
-        <Route 
-          path="/expediente/:id" 
-          element={isAuthenticated ? <Expediente /> : <Navigate to="/login" />} 
+
+        <Route path="/login"
+          element={isAuthenticated ? <Navigate to="/" /> : <LoginScreen />}
         />
 
-        <Route 
-          path="/nueva-mascota" 
-          element={(isAuthenticated && (esVeterinario || esAdministrador)) ? <AgregarMascota /> : <Navigate to="/login" />} 
+        <Route path="/dashboard"
+          element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />}
         />
 
-        <Route 
-          path="/perfil" 
-          element={isAuthenticated ? <Perfil /> : <Navigate to="/login" />} 
+        <Route path="/expediente/:id"
+          element={isAuthenticated ? <Expediente /> : <Navigate to="/login" />}
         />
 
-        {/* Ruta protegida: solo Administrador puede entrar */}
-        <Route 
-          path="/panel-admin" 
-          element={isAuthenticated && esAdministrador ? <PanelAdmin /> : <Navigate to="/" />} 
+        <Route path="/nueva-mascota"
+          element={(isAuthenticated && (esVeterinario || esAdministrador)) ? <AgregarMascota /> : <Navigate to="/login" />}
+        />
+
+        <Route path="/perfil"
+          element={isAuthenticated ? <Perfil /> : <Navigate to="/login" />}
+        />
+
+        <Route path="/panel-admin"
+          element={isAuthenticated && esAdministrador ? <PanelAdmin /> : <Navigate to="/" />}
         />
 
         {/* Calendario completo: solo veterinarios y admin */}
-        <Route
-          path="/calendario"
+        <Route path="/calendario"
           element={(isAuthenticated && (esVeterinario || esAdministrador)) ? <CalendarioCompleto /> : <Navigate to="/" />}
         />
+
+        {/* ✅ Vista de citas para tutores: solo lectura */}
+        <Route path="/mis-citas"
+          element={isAuthenticated && esTutor ? <MisCitasTutor /> : <Navigate to="/" />}
+        />
+        
+        {/* 🌟 Ruta Pública */}
+        <Route path="/nuestro-equipo" element={<NuestroEquipo />} />
 
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>

@@ -16,104 +16,96 @@ export default function Expediente() {
   const navigate = useNavigate();
   const { esVeterinario, esAdministrador } = useAuth();
   const puedeEditar = esVeterinario || esAdministrador;
-  
-  // Hook personalizado con toda la lógica del expediente
-  const { 
-    animal, 
-    loading, 
-    error,
+
+  const {
+    animal, loading, error,
     actualizarAnimal,
-    agregarEvento, 
-    agregarTutor, 
+    agregarEvento,
+    editarEvento,
+    eliminarEvento,
+    agregarTutor,
     cambiarFoto,
     actualizarTutor
   } = useExpediente(id);
 
-  // Estados para modales
   const [mostrarModalEvento, setMostrarModalEvento] = useState(false);
+  const [eventoEditar, setEventoEditar] = useState(null); // null = modo crear
   const [mostrarModalTutor, setMostrarModalTutor] = useState(false);
 
-  // 💉 Guardar evento médico
-  const handleGuardarEvento = async (eventoData, archivo) => {
-    await agregarEvento(eventoData, archivo);
-    alert('✅ Evento agregado exitosamente');
+  // Abrir modal en modo CREAR
+  const abrirModalNuevo = () => {
+    setEventoEditar(null);
+    setMostrarModalEvento(true);
   };
 
-  // 👤 Guardar tutor
+  // Abrir modal en modo EDITAR
+  const abrirModalEditar = (evento) => {
+    setEventoEditar(evento);
+    setMostrarModalEvento(true);
+  };
+
+  // Guardar: distingue crear vs editar
+  const handleGuardarEvento = async (eventoData, archivo, firmaArchivo) => {
+    if (eventoEditar) {
+      await editarEvento(eventoEditar.id_evento, eventoData, archivo);
+    } else {
+      await agregarEvento(eventoData, archivo);
+    }
+    // La firma se maneja igual que radiografía — si quisieras un endpoint separado lo agregas aquí
+  };
+
   const handleGuardarTutor = async (tutorData) => {
     await agregarTutor(tutorData);
-    alert('✅ Tutor registrado exitosamente');
   };
 
-  // 📸 Cambiar foto
   const handleCambiarFoto = async (file) => {
     await cambiarFoto(file);
   };
 
-  // Estados de carga y error
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <LoadingSpinner mensaje="Cargando expediente..." />
-      </div>
-    );
-  }
+  if (loading) return (
+    <div className="min-h-screen bg-gray-50">
+      <LoadingSpinner mensaje="Cargando expediente..." />
+    </div>
+  );
 
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gray-50 p-8">
-        {/* Botón volver (en caso de error) 🌟 */}
-        <button 
-          onClick={() => navigate(-1)} 
-          className="mb-6 bg-white border border-green-200 text-green-800 font-bold py-2 px-4 rounded-full shadow-sm hover:bg-green-50 hover:shadow-md transition-all flex items-center gap-2 group w-fit"
-        >
-          <span className="transform group-hover:-translate-x-1 transition-transform">←</span> 
-          {puedeEditar ? 'Volver al buscador' : 'Volver a mis mascotas'}
-        </button>
-        <ErrorMessage mensaje={error} onRetry={() => window.location.reload()} />
-      </div>
-    );
-  }
+  if (error) return (
+    <div className="min-h-screen bg-gray-50 p-8">
+      <button onClick={() => navigate(-1)}
+        className="mb-6 bg-white border border-green-200 text-green-800 font-bold py-2 px-4 rounded-full shadow-sm hover:bg-green-50 transition-all flex items-center gap-2 group w-fit">
+        <span className="transform group-hover:-translate-x-1 transition-transform">←</span>
+        {puedeEditar ? 'Volver al buscador' : 'Volver a mis mascotas'}
+      </button>
+      <ErrorMessage mensaje={error} onRetry={() => window.location.reload()} />
+    </div>
+  );
 
-  if (!animal) {
-    return (
-      <div className="min-h-screen bg-gray-50 p-8">
-        <ErrorMessage mensaje="No se encontró el expediente" />
-      </div>
-    );
-  }
+  if (!animal) return (
+    <div className="min-h-screen bg-gray-50 p-8">
+      <ErrorMessage mensaje="No se encontró el expediente" />
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-gray-50 p-8 relative">
-      
-      {/* Botón volver principal 🌟 */}
-      <button 
-        onClick={() => navigate(-1)} 
-        className="mb-6 bg-white border border-green-200 text-green-800 font-bold py-2 px-4 rounded-full shadow-sm hover:bg-green-50 hover:shadow-md transition-all flex items-center gap-2 group w-fit"
-      >
-        <span className="transform group-hover:-translate-x-1 transition-transform">←</span> 
+
+      <button onClick={() => navigate(-1)}
+        className="mb-6 bg-white border border-green-200 text-green-800 font-bold py-2 px-4 rounded-full shadow-sm hover:bg-green-50 transition-all flex items-center gap-2 group w-fit">
+        <span className="transform group-hover:-translate-x-1 transition-transform">←</span>
         {puedeEditar ? 'Volver al buscador' : 'Volver a mis mascotas'}
       </button>
 
-      {/* Contenedor principal */}
       <div className="max-w-5xl mx-auto bg-white rounded-3xl shadow-xl overflow-hidden">
-        
-        {/* Header con foto y nombre */}
-        <HeaderExpediente 
+
+        <HeaderExpediente
           animal={animal}
           esVeterinario={puedeEditar}
           onCambiarFoto={handleCambiarFoto}
         />
 
         <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
-          
           <div>
-            <InfoBasica animal={animal}
-            esVeterinario={puedeEditar} 
-            onActualizar={actualizarAnimal} 
-            />
-            
-            <InfoTutor 
+            <InfoBasica animal={animal} esVeterinario={puedeEditar} onActualizar={actualizarAnimal} />
+            <InfoTutor
               animal={animal}
               esVeterinario={puedeEditar}
               onActualizarTutor={actualizarTutor}
@@ -122,30 +114,31 @@ export default function Expediente() {
           </div>
 
           <div>
-            <HistorialMedico 
+            <HistorialMedico
               historial={animal.HistorialMedicos}
               esVeterinario={puedeEditar}
-              onAgregarEvento={() => setMostrarModalEvento(true)}
+              onAgregarEvento={abrirModalNuevo}
+              onEditarEvento={abrirModalEditar}
+              onEliminarEvento={eliminarEvento}
             />
           </div>
         </div>
       </div>
 
       {puedeEditar && mostrarModalEvento && (
-        <ModalEvento 
-          onCerrar={() => setMostrarModalEvento(false)}
+        <ModalEvento
+          eventoEditar={eventoEditar}
+          onCerrar={() => { setMostrarModalEvento(false); setEventoEditar(null); }}
           onGuardar={handleGuardarEvento}
         />
       )}
 
       {puedeEditar && mostrarModalTutor && (
-        <ModalTutor 
+        <ModalTutor
           onCerrar={() => setMostrarModalTutor(false)}
           onGuardar={handleGuardarTutor}
         />
       )}
     </div>
   );
-
-  
 }

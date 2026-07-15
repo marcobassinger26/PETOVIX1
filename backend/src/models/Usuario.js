@@ -1,7 +1,7 @@
 // Archivo: src/models/Usuario.js
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/database');
-const Cliente = require('./Cliente'); // Importamos Cliente para relacionarlos
+const Cliente = require('./Cliente');
 
 const Usuario = sequelize.define('Usuario', {
     id_usuario: {
@@ -23,22 +23,23 @@ const Usuario = sequelize.define('Usuario', {
         allowNull: false
     },
     rol: {
-       type: DataTypes.ENUM('Veterinario', 'Tutor', 'Administrador'),
-       defaultValue: 'Tutor'
+        type: DataTypes.ENUM('Veterinario', 'Tutor', 'Administrador'),
+        defaultValue: 'Tutor'
     },
     id_cliente: {
         type: DataTypes.INTEGER,
-        references: {
-            model: Cliente,
-            key: 'id_cliente'
-        }
+        references: { model: Cliente, key: 'id_cliente' }
+    },
+    // ✅ Nuevo campo
+    foto_perfil: {
+        type: DataTypes.STRING(255),
+        allowNull: true
     }
 }, {
     tableName: 'usuarios',
     timestamps: false
 });
 
-// Relación: Un Usuario puede ser un Cliente (Tutor)
 Usuario.belongsTo(Cliente, { foreignKey: 'id_cliente' });
 
 module.exports = Usuario;

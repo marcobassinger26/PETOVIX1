@@ -1,36 +1,29 @@
-
 const express = require('express');
 const router = express.Router();
 const animalController = require('../controllers/animalController');
 const authMiddleware = require('../middleware/authMiddleware');
+const { verificarRol } = require('../middleware/roleMiddleware');
 
-// Cuando alguien entre a la raíz de esta ruta, ejecutamos el controlador
-router.get('/', animalController.getAllAnimals);
-
-
-router.get('/chip/:chip', animalController.buscarPorMicrochip);
-
-// 👇 NUEVA — antes de router.get('/:id', ...)
+// Rutas específicas PRIMERO
 router.get('/mis-pacientes', authMiddleware, animalController.getMisPacientes);
+router.get('/chip/:chip',    animalController.buscarPorMicrochip);
 
+// Rutas dinámicas
+router.get('/',    animalController.getAllAnimals);
 router.get('/:id', animalController.getPerfilCompleto);
 
-router.post('/:id/historial',authMiddleware, animalController.agregarEvento);
+// Rutas protegidas — animales
+router.post('/',              authMiddleware, verificarRol(['Veterinario', 'Administrador']), animalController.crearAnimal);
+router.post('/vincular-chip', authMiddleware, animalController.vincularPorChip);
+router.put('/:id',            authMiddleware, verificarRol(['Veterinario', 'Administrador']), animalController.actualizarAnimal);
 
-router.post('/:id/tutor', animalController.registrarTutor);
+// Rutas protegidas — historial
+router.post('/:id/historial',            authMiddleware, verificarRol(['Veterinario', 'Administrador']), animalController.agregarEvento);
+router.put('/historial/:id_evento',      authMiddleware, verificarRol(['Veterinario', 'Administrador']), animalController.editarEvento);
+router.delete('/historial/:id_evento',   authMiddleware, verificarRol(['Veterinario', 'Administrador']), animalController.eliminarEvento);
 
-router.post('/vincular', animalController.vincularMascota);
-
-router.post('/', animalController.crearAnimal);
-
-router.put('/:id', animalController.actualizarAnimal);
-
-// Ruta para actualizar los datos del tutor
-router.put('/tutor/:id_cliente', animalController.actualizarTutor);
-
-// 🔗 Ruta para que el tutor vincule a su mascota usando solo el CHIP
-router.post('/vincular-chip', authMiddleware, animalController.vincularMascota);
-
-
+// Rutas protegidas — tutor
+router.post('/:id/tutor',          authMiddleware, verificarRol(['Veterinario', 'Administrador']), animalController.registrarTutor);
+router.put('/tutor/:id_cliente',   authMiddleware, verificarRol(['Veterinario', 'Administrador']), animalController.actualizarTutor);
 
 module.exports = router;

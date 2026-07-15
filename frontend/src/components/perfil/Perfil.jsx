@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import Navbar from '../common/Navbar';
 import { authService } from '../../services/authService';
+import api from '../../services/api';
 
 export default function Perfil() {
   const { usuario, logout, actualizarUsuario } = useAuth(); 
@@ -10,6 +11,7 @@ export default function Perfil() {
   
   const [editando, setEditando] = useState(false);
   const [guardando, setGuardando] = useState(false);
+  const [subiendoFoto, setSubiendoFoto] = useState(false);
 
   const [formData, setFormData] = useState({
     nombre: '',
@@ -35,27 +37,12 @@ export default function Perfil() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setGuardando(true);
-    
     try {
       await authService.updateProfile(formData);
-      
-      if (actualizarUsuario) {
-        actualizarUsuario({
-          ...usuario,
-          nombre: formData.nombre,
-          email: formData.email
-        });
-      }
-
+      actualizarUsuario({ nombre: formData.nombre, email: formData.email });
       alert('¡Tus datos se han actualizado correctamente! ✅');
       setEditando(false);
-      
-      setFormData(prev => ({ 
-        ...prev, 
-        passwordActual: '', 
-        nuevaPassword: '' 
-      }));
-
+      setFormData(prev => ({ ...prev, passwordActual: '', nuevaPassword: '' }));
     } catch (err) {
       alert(err.response?.data?.mensaje || 'Error al actualizar el perfil');
     } finally {
@@ -63,6 +50,33 @@ export default function Perfil() {
     }
   };
 
+  const handleFoto = async (e) => {
+    const archivo = e.target.files[0];
+    if (!archivo) return;
+    if (archivo.size > 2 * 1024 * 1024) {
+      alert('La imagen no debe superar 2MB');
+      return;
+    }
+    setSubiendoFoto(true);
+    try {
+      const formDataFoto = new FormData();
+      formDataFoto.append('imagen', archivo);
+
+      const { data } = await api.post('/upload/foto-perfil', formDataFoto, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+
+      // ✅ Actualiza estado + localStorage en un solo lugar
+      actualizarUsuario({ foto_perfil: data.url });
+    } catch {
+      alert('Error al subir la foto. Intenta de nuevo.');
+    } finally {
+      setSubiendoFoto(false);
+    }
+  };
+
+  // ✅ Lee directo del usuario (que ya persiste en localStorage)
+  const fotoPerfil = usuario?.foto_perfil || null;
   const inicial = usuario?.nombre ? usuario.nombre.charAt(0).toUpperCase() : '👤';
 
   return (
@@ -80,15 +94,26 @@ export default function Perfil() {
 
         <div className="bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col md:flex-row">
           
-          {/* COLUMNA IZQUIERDA: Tarjeta Dinámica */}
+          {/* COLUMNA IZQUIERDA */}
           <div className="bg-green-900 text-white p-8 md:w-1/3 flex flex-col items-center justify-center text-center">
-            <div className="w-32 h-32 bg-green-100 text-green-900 rounded-full flex items-center justify-center text-5xl font-bold shadow-inner mb-6 border-4 border-green-700">
-              {inicial}
-            </div>
+            <label className="relative cursor-pointer group mb-6">
+              <div className="w-32 h-32 bg-green-100 text-green-900 rounded-full flex items-center justify-center text-5xl font-bold shadow-inner border-4 border-green-700 overflow-hidden">
+                {fotoPerfil
+                  ? <img src={fotoPerfil} alt="Foto de perfil" className="w-full h-full object-cover" />
+                  : inicial
+                }
+              </div>
+              <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                {subiendoFoto
+                  ? <span className="text-white text-xs font-bold animate-pulse">Subiendo...</span>
+                  : <span className="text-white text-xs font-bold">📷 Cambiar</span>
+                }
+              </div>
+              <input type="file" accept="image/*" className="hidden" onChange={handleFoto} disabled={subiendoFoto} />
+            </label>
             
             <h2 className="text-2xl font-bold mb-1">{usuario?.nombre}</h2>
 
-            {/* 🌟 NUEVO: CAJA DEL CÓDIGO DE TUTOR */}
             {usuario?.rol === 'Tutor' && (
               <div className="bg-green-800 p-3 rounded-xl w-full my-3 border border-green-600 shadow-inner">
                 <p className="text-xs text-green-300 font-semibold mb-1 uppercase tracking-wider">Mi Código de Tutor</p>
@@ -104,17 +129,14 @@ export default function Perfil() {
             <p className="text-green-200 text-sm mb-8 opacity-80">Miembro desde 2026</p>
             
             <button 
-              onClick={() => {
-                logout();
-                window.location.href = '/'; 
-              }}
+              onClick={() => { logout(); window.location.href = '/'; }}
               className="mt-auto bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-6 rounded-lg transition-colors w-full border border-red-400 shadow-lg"
             >
               Cerrar Sesión
             </button>
           </div>
 
-          {/* COLUMNA DERECHA: Formulario */}
+          {/* COLUMNA DERECHA */}
           <div className="p-8 md:w-2/3">
             <div className="flex justify-between items-center mb-6 border-b pb-4">
               <h3 className="text-2xl font-bold text-gray-800">Ajustes de Cuenta</h3>
@@ -135,24 +157,16 @@ export default function Perfil() {
                   <div>
                     <label className="block text-sm font-bold text-gray-700 mb-1">Nombre Completo</label>
                     <input 
-                      type="text" 
-                      name="nombre"
-                      value={formData.nombre}
-                      onChange={handleChange}
-                      disabled={!editando}
-                      required
+                      type="text" name="nombre" value={formData.nombre}
+                      onChange={handleChange} disabled={!editando} required
                       className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:border-green-500 disabled:bg-gray-50 disabled:text-gray-500 transition-all shadow-inner"
                     />
                   </div>
                   <div>
                     <label className="block text-sm font-bold text-gray-700 mb-1">Correo Electrónico</label>
                     <input 
-                      type="email" 
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      disabled={!editando}
-                      required
+                      type="email" name="email" value={formData.email}
+                      onChange={handleChange} disabled={!editando} required
                       className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:border-green-500 disabled:bg-gray-50 disabled:text-gray-500 transition-all shadow-inner"
                     />
                   </div>
@@ -165,24 +179,16 @@ export default function Perfil() {
                   <div>
                     <label className="block text-sm font-bold text-gray-700 mb-1">Contraseña Actual</label>
                     <input 
-                      type="password" 
-                      name="passwordActual"
-                      value={formData.passwordActual}
-                      onChange={handleChange}
-                      required={editando}
-                      placeholder="••••••••"
+                      type="password" name="passwordActual" value={formData.passwordActual}
+                      onChange={handleChange} required={editando} placeholder="••••••••"
                       className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:border-green-500"
                     />
                   </div>
                   <div>
                     <label className="block text-sm font-bold text-gray-700 mb-1">Nueva Contraseña (Opcional)</label>
                     <input 
-                      type="password" 
-                      name="nuevaPassword"
-                      value={formData.nuevaPassword}
-                      onChange={handleChange}
-                      placeholder="Mínimo 6 caracteres"
-                      minLength="6"
+                      type="password" name="nuevaPassword" value={formData.nuevaPassword}
+                      onChange={handleChange} placeholder="Mínimo 6 caracteres" minLength="6"
                       className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:border-green-500"
                     />
                   </div>
@@ -191,16 +197,12 @@ export default function Perfil() {
 
               {editando && (
                 <div className="flex gap-3 pt-6">
-                  <button 
-                    type="button"
-                    onClick={() => setEditando(false)}
-                    className="flex-1 bg-gray-200 text-gray-600 font-bold py-3 rounded-xl hover:bg-gray-200 transition"
+                  <button type="button" onClick={() => setEditando(false)}
+                    className="flex-1 bg-gray-200 text-gray-600 font-bold py-3 rounded-xl hover:bg-gray-300 transition"
                   >
                     Cancelar
                   </button>
-                  <button 
-                    type="submit"
-                    disabled={guardando}
+                  <button type="submit" disabled={guardando}
                     className="flex-1 bg-green-700 text-white font-bold py-3 rounded-xl hover:bg-green-800 transition shadow-lg disabled:opacity-50"
                   >
                     {guardando ? 'Guardando...' : '💾 Guardar Cambios'}

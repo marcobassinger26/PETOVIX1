@@ -20,4 +20,8 @@ router.delete('/veterinarios/:id',
     usuarioController.eliminarVeterinario 
 );
 
+
+// Agrega esta línea para crear la ruta pública:
+router.get('/equipo-medico', usuarioController.getEquipoMedico);
+
 module.exports = router;

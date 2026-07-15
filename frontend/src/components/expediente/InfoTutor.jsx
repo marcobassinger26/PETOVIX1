@@ -70,10 +70,10 @@ export default function InfoTutor({ animal, esVeterinario, onActualizarTutor, on
       )}
 
       <div className="flex justify-between items-center mb-4 border-b pb-2">
-        <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">👤 Tutor Responsable</h3>
+        <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2"> Tutor Responsable</h3>
         {esVeterinario && !editando && (
           <button onClick={() => setEditando(true)} className="text-sm text-green-700 font-bold hover:bg-green-50 px-3 py-1 rounded-lg transition">
-            ✏️ Editar
+             Editar
           </button>
         )}
       </div>
@@ -115,9 +115,9 @@ export default function InfoTutor({ animal, esVeterinario, onActualizarTutor, on
         ) : (
           <div className="animate-fade-in">
             <p className="text-gray-700 py-1"><span className="text-gray-400 font-bold text-xs uppercase mr-2">Nombre:</span> {tutor.nombre_completo}</p>
-            <p className="text-gray-700 py-1"><span className="text-gray-400 font-bold text-xs uppercase mr-2">📞 Teléfono:</span> {tutor.telefono}</p>
-            <p className="text-gray-700 py-1"><span className="text-gray-400 font-bold text-xs uppercase mr-2">📧 Email:</span> {tutor.email}</p>
-            <p className="text-gray-700 py-1"><span className="text-gray-400 font-bold text-xs uppercase mr-2">📍 Dirección:</span> {tutor.direccion || 'No registrada'}</p>
+            <p className="text-gray-700 py-1"><span className="text-gray-400 font-bold text-xs uppercase mr-2"> Teléfono:</span> {tutor.telefono}</p>
+            <p className="text-gray-700 py-1"><span className="text-gray-400 font-bold text-xs uppercase mr-2"> Email:</span> {tutor.email}</p>
+            <p className="text-gray-700 py-1"><span className="text-gray-400 font-bold text-xs uppercase mr-2"> Dirección:</span> {tutor.direccion || 'No registrada'}</p>
           </div>
         )}
       </div>

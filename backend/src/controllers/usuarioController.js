@@ -56,3 +56,21 @@ exports.eliminarVeterinario = async (req, res) => {
         res.status(500).json({ error: 'Error interno al intentar dar de baja' });
     }
 };
+
+// 🌍 OBTENER VETERINARIOS PARA EL PÚBLICO (RUTA SEGURA)
+exports.getEquipoMedico = async (req, res) => {
+    try {
+        const veterinarios = await Usuario.findAll({
+            where: { 
+                rol: 'Veterinario' 
+            },
+            attributes: ['id_usuario', 'nombre', 'foto_perfil'], // 🛡️ CERO datos sensibles
+            order: [['nombre', 'ASC']]
+        });
+        
+        res.json(veterinarios);
+    } catch (error) {
+        console.error("🔴 ERROR AL CARGAR EQUIPO MÉDICO:", error);
+        res.status(500).json({ error: 'Error al cargar el directorio médico' });
+    }
+};

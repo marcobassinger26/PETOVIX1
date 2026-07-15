@@ -138,7 +138,28 @@ function HomeVeterinario({ usuario }) {
   const [lottiePatitas, setLottiePatitas] = useState(null);
   const [lottieMas, setLottieMas] = useState(null);
   const [mostrarModal, setMostrarModal] = useState(false);
-  const { citasHoy, loading: loadingCitas, crearCita, cancelarCita } = useCitas();
+  const [notificacion, setNotificacion] = useState(null);
+  const { citasHoy, loading: loadingCitas, crearCita, cancelarCita, completarCita } = useCitas();
+
+  // Verificar si hay cita en los próximos 30 minutos
+  useEffect(() => {
+    if (!citasHoy.length) return;
+    const verificar = () => {
+      const ahora = new Date();
+      const proxima = citasHoy.find(c => {
+        if (c.estado !== 'Pendiente') return false;
+        const [h, m] = c.hora.split(':').map(Number);
+        const horaCita = new Date();
+        horaCita.setHours(h, m, 0, 0);
+        const diffMin = (horaCita - ahora) / 60000;
+        return diffMin >= 0 && diffMin <= 30;
+      });
+      setNotificacion(proxima || null);
+    };
+    verificar();
+    const intervaloNotif = setInterval(verificar, 60000); // revisa cada minuto
+    return () => clearInterval(intervaloNotif);
+  }, [citasHoy]);
 
   const imagenesCarrusel = [
     "https://images.unsplash.com/photo-1599443015574-be5efa37dd1f?q=80&w=1200&auto=format&fit=crop",
@@ -169,6 +190,22 @@ function HomeVeterinario({ usuario }) {
         </h2>
         <p className="text-gray-500">Panel de control clínico - PETOVIX</p>
       </div>
+
+      {/* NOTIFICACIÓN CITA PRÓXIMA */}
+      {notificacion && (
+        <div className="mb-6 bg-amber-50 border border-amber-300 rounded-2xl px-5 py-4 flex items-center gap-4 shadow-sm animate-pulse">
+          <span className="text-2xl">🔔</span>
+          <div className="flex-1">
+            <p className="font-bold text-amber-800 text-sm">
+              Cita en menos de 30 minutos
+            </p>
+            <p className="text-amber-700 text-xs mt-0.5">
+              <strong>{notificacion.Animal?.nombre}</strong> — {notificacion.motivo} a las <strong>{notificacion.hora?.slice(0,5)}</strong>
+            </p>
+          </div>
+          <button onClick={() => setNotificacion(null)} className="text-amber-400 hover:text-amber-600 text-lg">✕</button>
+        </div>
+      )}
 
       {/* TARJETAS DE ACCIÓN */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -236,7 +273,7 @@ function HomeVeterinario({ usuario }) {
         <div className="bg-white rounded-3xl shadow-lg border border-gray-50 flex flex-col overflow-hidden">
           <div className="bg-green-50 p-5 border-b border-green-100 flex justify-between items-center">
             <h3 className="font-bold text-green-900 flex items-center gap-2">
-              📅 Agenda del Día
+              Agenda del Día
             </h3>
             <button
               onClick={() => setMostrarModal(true)}
@@ -287,13 +324,31 @@ function HomeVeterinario({ usuario }) {
                     </p>
                     <p className="text-xs text-gray-500 truncate">{cita.motivo}</p>
                   </div>
-                  <button
-                    onClick={() => cancelarCita(cita.id_cita)}
-                    className="text-gray-300 hover:text-red-400 transition text-sm flex-shrink-0"
-                    title="Cancelar cita"
-                  >
-                    ✕
-                  </button>
+                  {cita.estado === 'Pendiente' && (
+                    <div className="flex gap-1 flex-shrink-0">
+                      <button
+                        onClick={() => completarCita(cita.id_cita)}
+                        className="text-gray-300 hover:text-green-500 transition text-sm"
+                        title="Marcar como completada"
+                      >
+                        ✓
+                      </button>
+                      <button
+                        onClick={() => cancelarCita(cita.id_cita)}
+                        className="text-gray-300 hover:text-red-400 transition text-sm"
+                        title="Cancelar cita"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  )}
+                  {cita.estado !== 'Pendiente' && (
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold flex-shrink-0 ${
+                      cita.estado === 'Completada' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-500'
+                    }`}>
+                      {cita.estado}
+                    </span>
+                  )}
                 </div>
               ))
             )}
@@ -353,8 +408,8 @@ function HomeTutor() {
       <div className="mb-8">
         <h2 className="text-3xl font-extrabold text-green-900">
           {isAuthenticated
-            ? `Hola, ${usuario?.nombre?.split(' ')[0] || 'Bienvenido'} 👋`
-            : 'Bienvenido a PETOVIX 🐾'}
+            ? `Hola, ${usuario?.nombre?.split(' ')[0] || 'Bienvenido'} `
+            : 'Bienvenido a PETOVIX '}
         </h2>
         <p className="text-gray-500">
           {isAuthenticated ? 'Tu portal de mascotas en PETOVIX' : 'Cuidando a tus mejores amigos con tecnología veterinaria.'}

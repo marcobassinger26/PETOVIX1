@@ -21,60 +21,59 @@ export function useExpediente(id_animal) {
   };
 
   useEffect(() => {
-    if (id_animal) { cargarDatos(); }
+    if (id_animal) cargarDatos();
   }, [id_animal]);
 
-  // 🌟 NUEVA FUNCIÓN: Para actualizar alertas y estado
   const actualizarAnimal = async (datos) => {
-    try {
-      await animalesService.update(id_animal, datos);
-      await cargarDatos(); // Recarga la info para quitar el modo edición
-    } catch (err) {
-      console.error("Error al actualizar:", err);
-      throw err;
-    }
+    await animalesService.update(id_animal, datos);
+    await cargarDatos();
   };
 
   const agregarEvento = async (eventoData, archivo = null) => {
-    try {
-      const res = await animalesService.addEvento(id_animal, eventoData);
-      if (archivo && res.id_evento) {
-        await uploadService.uploadEvidencia(res.id_evento, archivo);
-      }
-      await cargarDatos();
-      return res;
-    } catch (err) { throw err; }
+    const res = await animalesService.addEvento(id_animal, eventoData);
+    if (archivo && res.id_evento) {
+      await uploadService.uploadEvidencia(res.id_evento, archivo);
+    }
+    await cargarDatos();
+    return res;
+  };
+
+  // ✏️ NUEVO
+  const editarEvento = async (id_evento, datos, archivoNuevo = null) => {
+    await animalesService.editarEvento(id_evento, datos);
+    if (archivoNuevo) {
+      await uploadService.uploadEvidencia(id_evento, archivoNuevo);
+    }
+    await cargarDatos();
+  };
+
+  // 🗑️ NUEVO
+  const eliminarEvento = async (id_evento) => {
+    await animalesService.eliminarEvento(id_evento);
+    await cargarDatos();
   };
 
   const agregarTutor = async (tutorData) => {
-    try {
-      await animalesService.addTutor(id_animal, tutorData);
-      await cargarDatos();
-    } catch (err) { throw err; }
+    await animalesService.addTutor(id_animal, tutorData);
+    await cargarDatos();
   };
 
   const cambiarFoto = async (file) => {
-    try {
-      await uploadService.uploadFoto(id_animal, file);
-      await cargarDatos();
-    } catch (err) { throw err; }
+    await uploadService.uploadFoto(id_animal, file);
+    await cargarDatos();
   };
 
   const actualizarTutor = async (id_cliente, datos) => {
-    try {
-      await animalesService.updateTutor(id_cliente, datos);
-      await cargarDatos(); // Recarga para ver los cambios
-    } catch (err) {
-      throw err;
-    }
+    await animalesService.updateTutor(id_cliente, datos);
+    await cargarDatos();
   };
 
   return {
-    animal,
-    loading,
-    error,
-    actualizarAnimal, // 👈 Ahora el componente puede usar esto
+    animal, loading, error,
+    actualizarAnimal,
     agregarEvento,
+    editarEvento,
+    eliminarEvento,
     agregarTutor,
     cambiarFoto,
     actualizarTutor

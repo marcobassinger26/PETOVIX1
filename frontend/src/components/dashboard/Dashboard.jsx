@@ -5,53 +5,28 @@ import Navbar from '../common/Navbar';
 import LoadingSpinner from '../common/LoadingSpinner';
 import ErrorMessage from '../common/ErrorMessage';
 import BuscadorChip from './BuscadorChip';
-import VincularMascota from './VincularMascota';
 import MascotaCard from './MascotaCard';
 
 export default function Dashboard() {
-  const { usuario, esVeterinario, esAdministrador, esTutor } = useAuth();
+  const { usuario, esVeterinario, esAdministrador, esTutor, loading: authLoading } = useAuth();
   const navigate = useNavigate();
-  const { 
-    mascotas, 
-    loading, 
+
+  // ✅ Esperamos a que useAuth termine antes de hacer cualquier fetch
+  const {
+    mascotas,
+    loading,
     error,
-    cargarMascotas, 
-    buscarPorChip, 
-    vincularMascota 
-  } = useMascotas(esTutor ? usuario?.id_cliente : undefined);
+    cargarMascotas,
+    buscarPorChip
+  } = useMascotas(!authLoading, esTutor, usuario?.id_cliente);
 
   const puedeVerTodos = esVeterinario || esAdministrador;
 
-  // 🔍 Manejar búsqueda por chip (solo veterinarios)
   const handleBuscar = async (chip) => {
     try {
       await buscarPorChip(chip);
-    } catch (error) {
-      alert("No se encontró mascota con ese chip");
-    }
-  };
-
-  
-
-  // 🔗 Manejar vinculación de mascota (solo tutores)
-  const handleVincular = async (chip) => {
-    // 🛡️ Validación amigable: Si el token aún no tiene el ID, le pedimos reconectar
-    if (!usuario?.id_cliente) {
-      alert("Aún no tienes un perfil de cliente asociado. Por favor, cierra sesión y vuelve a entrar para sincronizar tus datos de KORIUM.");
-      return; // Detenemos la ejecución de forma limpia
-    }
-
-    try {
-      // 🚀 Llamamos a la vinculación automática (ya no es necesario forzar el ID aquí si el backend lo lee del token)
-      await vincularMascota(chip);
-      
-      alert("¡Mascota vinculada exitosamente! 🎉");
-      
-      // 🌟 MAGIA: Recargamos la lista de mascotas silenciosamente para que aparezca la nueva tarjeta de inmediato
-      await cargarMascotas(); 
-
-    } catch (error) {
-      alert(error.response?.data?.mensaje || "Error al vincular. Verifica que el número de chip sea correcto y no tenga dueño.");
+    } catch {
+      alert('No se encontró mascota con ese chip');
     }
   };
 
@@ -60,35 +35,47 @@ export default function Dashboard() {
       <Navbar />
 
       <div className="container mx-auto p-4 md:p-8">
-        
-        {/* 🌟 Botón volver al Inicio 🌟 */}
-        <button 
-          onClick={() => navigate('/')} 
+
+        <button
+          onClick={() => navigate('/')}
           className="mb-6 bg-white border border-green-200 text-green-800 font-bold py-2 px-4 rounded-full shadow-sm hover:bg-green-50 hover:shadow-md transition-all flex items-center gap-2 group w-fit"
         >
-          <span className="transform group-hover:-translate-x-1 transition-transform">←</span> 
+          <span className="transform group-hover:-translate-x-1 transition-transform">←</span>
           Volver al Inicio
         </button>
 
-        {/* Buscador para Veterinarios y Admin */}
+        {/* Buscador solo para Veterinarios y Admin */}
         {puedeVerTodos && (
-          <BuscadorChip 
+          <BuscadorChip
             onBuscar={handleBuscar}
             onLimpiar={cargarMascotas}
           />
         )}
 
-        {/* Vinculador para Tutores */}
+        {/* Banner informativo para Tutores */}
         {esTutor && (
-          <VincularMascota onVincular={handleVincular} />
+          <div className="bg-gradient-to-r from-green-700 to-green-900 p-6 rounded-2xl shadow-lg mb-8 text-white">
+            <div className="flex flex-col md:flex-row items-center gap-6">
+              <div className="text-5xl">🐾</div>
+              <div className="flex-1">
+                <h2 className="text-xl font-bold mb-1">¿Cómo vincular una mascota?</h2>
+                <p className="opacity-90 text-sm">
+                  Comparte tu <strong>Código de Tutor</strong> con el veterinario para que él asigne las mascotas a tu cuenta. Puedes verlo en tu perfil.
+                </p>
+              </div>
+              <a href="/perfil"
+                className="bg-white text-green-800 px-5 py-2.5 rounded-xl font-bold hover:bg-green-50 transition shadow-md text-sm whitespace-nowrap"
+              >
+                Ver mi código →
+              </a>
+            </div>
+          </div>
         )}
 
-        {/* Título de la sección */}
         <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-          {esTutor ? '🐾 Mis Mascotas' : '📋 Pacientes Recientes'}
+          {esTutor ? '🐾 Mis Mascotas' : '📋 Pacientes Registrados'}
         </h2>
 
-        {/* Manejo de estados: Loading, Error, Sin datos, Lista */}
         {loading ? (
           <LoadingSpinner mensaje="Cargando expedientes..." />
         ) : error ? (
@@ -97,8 +84,8 @@ export default function Dashboard() {
           <div className="text-center py-20 opacity-50 bg-white rounded-3xl border border-dashed border-gray-300">
             <p className="text-6xl mb-4 animate-bounce">🐾</p>
             <p className="text-gray-600 text-lg font-medium">
-              {esTutor 
-                ? 'Aún no tienes mascotas registradas. Ingresa el chip arriba para ver su carnet.' 
+              {esTutor
+                ? 'Aún no tienes mascotas asignadas. Pídele al veterinario que use tu código de tutor.'
                 : 'No hay mascotas registradas en el sistema.'}
             </p>
           </div>

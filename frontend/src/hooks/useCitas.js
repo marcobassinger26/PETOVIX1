@@ -38,7 +38,14 @@ export function useCitas() {
     setCitasHoy(prev => prev.filter(c => c.id_cita !== id_cita));
   };
 
+  const completarCita = async (id_cita) => {
+    await api.put(`/citas/${id_cita}/estado`, { estado: 'Completada' });
+    setCitasHoy(prev => prev.map(c =>
+      c.id_cita === id_cita ? { ...c, estado: 'Completada' } : c
+    ));
+  };
+
   useEffect(() => { cargarCitasHoy(); }, [cargarCitasHoy]);
 
-  return { citasHoy, loading, crearCita, cancelarCita, cargarCitasHoy };
+  return { citasHoy, loading, crearCita, cancelarCita, completarCita, cargarCitasHoy };
 }

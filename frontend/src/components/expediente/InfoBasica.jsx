@@ -28,21 +28,35 @@ export default function InfoBasica({ animal, esVeterinario, onActualizar }) {
     }
   };
 
-  // Si aún no hay datos del animal, mostramos un mensaje simple
+  // Calcular edad desde fecha_nacimiento
+  const calcularEdad = (fechaNac) => {
+    if (!fechaNac) return null;
+    const hoy = new Date();
+    const nac = new Date(fechaNac);
+    const meses = (hoy.getFullYear() - nac.getFullYear()) * 12 + (hoy.getMonth() - nac.getMonth());
+    if (meses < 1) return 'Recién nacido';
+    if (meses < 12) return `${meses} mes${meses > 1 ? 'es' : ''}`;
+    const anios = Math.floor(meses / 12);
+    const mesesRest = meses % 12;
+    return mesesRest > 0 ? `${anios} año${anios > 1 ? 's' : ''} y ${mesesRest} mes${mesesRest > 1 ? 'es' : ''}` : `${anios} año${anios > 1 ? 's' : ''}`;
+  };
+
+  const edadCalculada = calcularEdad(animal?.fecha_nacimiento);
+
   if (!animal) return <p className="text-gray-400 italic">Cargando información...</p>;
 
   return (
     <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm mb-6">
       <div className="flex justify-between items-center mb-4 border-b pb-2">
         <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-          📋 Información Básica
+           Información Básica
         </h3>
         {esVeterinario && !editando && (
           <button 
             onClick={() => setEditando(true)} 
             className="text-sm text-green-700 font-bold hover:bg-green-50 px-3 py-1 rounded-lg transition"
           >
-            ✏️ Editar
+             Editar
           </button>
         )}
       </div>
@@ -60,6 +74,14 @@ export default function InfoBasica({ animal, esVeterinario, onActualizar }) {
           <span className="font-bold min-w-[120px]">Fecha Nac:</span>
           <span>{animal.fecha_nacimiento || 'No registrada'}</span>
         </li>
+        {edadCalculada && (
+          <li className="flex items-center gap-2">
+            <span className="font-bold min-w-[120px]">Edad:</span>
+            <span className="bg-blue-50 text-blue-700 px-2 py-1 rounded text-sm font-semibold">
+              🎂 {edadCalculada}
+            </span>
+          </li>
+        )}
         <li className="flex items-center gap-2 border-t pt-3">
           <span className="font-bold min-w-[120px]">Estado Actual:</span>
           {editando ? (
@@ -84,7 +106,7 @@ export default function InfoBasica({ animal, esVeterinario, onActualizar }) {
       {/* Sección de Alertas Médicas */}
       <div className="mt-6 bg-red-50 border-l-4 border-red-500 p-4 rounded-xl shadow-sm">
         <h4 className="text-red-700 font-bold flex items-center gap-2 mb-1">
-          ⚠️ Alertas Médicas
+           Alertas Médicas
         </h4>
         {editando ? (
           <textarea 
